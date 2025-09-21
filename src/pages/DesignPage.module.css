@@ -1,0 +1,120 @@
+.pageContainer {
+    /* 使用 flex 布局替代绝对定位，为响应式打下基础 */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* 内容默认靠左对齐 */
+    padding: 2rem 5%; /* 给页面一些内边距 */
+    position: relative; /* 确保子元素的绝对定位是相对于此容器 */
+    min-height: 80vh; /* 保证内容区域有一定高度 */
+}
+
+.pageTitle {
+    width: 100%;
+    margin-bottom: 1rem;
+    position: relative; /* 从绝对定位改为相对定位 */
+}
+
+.backButtonContainer {
+    margin-bottom: 2rem;
+    position: relative;
+}
+
+.galleryContainer {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap; /* 允许项目换行 */
+    gap: 2rem; /* 项目之间的间距 */
+    justify-content: center; /* 默认居中对齐 */
+}
+
+.galleryItem {
+    flex: 1 1 250px; /* flex-grow, flex-shrink, flex-basis。允许项目伸缩，基础宽度250px */
+    max-width: 300px; /* 每个项目最大宽度 */
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.galleryImage {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--border-color-hud);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.galleryImage:hover {
+    transform: scale(1.05);
+    box-shadow: var(--glow-box-primary);
+}
+
+.galleryCaption {
+    color: var(--text-color-dim);
+    font-size: 0.9rem;
+    margin-top: 0.8rem;
+    line-height: 1.5;
+}
+
+/* PixelTransition hover 内容样式 */
+.imageContainer {
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 15, 30, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+}
+
+.hoverContent {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(0, 40, 80, 0.9));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    backdrop-filter: blur(10px);
+}
+
+.hoverText {
+    color: var(--text-color-main);
+    font-family: var(--font-heiti);
+    font-size: 0.95rem;
+    text-align: center;
+    line-height: 1.6;
+    text-shadow: var(--glow-text-primary);
+    animation: textGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes textGlow {
+    from {
+        text-shadow: var(--glow-text-primary);
+    }
+    to {
+        text-shadow: 0 0 8px var(--primary-glow-color), 0 0 16px var(--primary-glow-color), 0 0 24px var(--primary-glow-color);
+    }
+}
+
+
+/* 响应式设计：在小屏幕设备上调整布局 */
+@media (max-width: 768px) {
+    .pageContainer {
+        align-items: center; /* 在手机上让所有内容居中 */
+        padding: 2rem 1rem;
+    }
+
+    .pageTitle {
+        text-align: center;
+        font-size: 2rem; /* 适当调小标题字体 */
+    }
+
+    .galleryContainer {
+        flex-direction: column; /* 将画廊项目垂直堆叠 */
+        align-items: center;
+    }
+
+    .galleryItem {
+        max-width: 90%; /* 在手机上项目可以更宽一些 */
+    }
+}

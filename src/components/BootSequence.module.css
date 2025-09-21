@@ -1,0 +1,62 @@
+.bootSequence {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #010008;
+    z-index: 10000; display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    font-family: 'VT323', monospace;
+    color: var(--text-color-boot);
+    transition: opacity 0.8s ease-out 0.5s, visibility 0.8s ease-out 0.5s;
+}
+
+.bootSequence.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.bootTextContainer {
+    margin-bottom: 20px;
+    min-height: 50px;
+}
+
+.bootText {
+    font-size: 1.2em;
+    white-space: pre;
+    text-align: center;
+}
+
+.bootText::after {
+    content: '_';
+    animation: blinkCursor 0.7s infinite step-end;
+}
+
+.bootLoaderContainer {
+    width: 60%;
+    max-width: 400px;
+    height: 15px;
+    border: 1px solid var(--text-color-boot);
+    margin-bottom: 20px;
+    padding: 2px;
+}
+
+.bootLoaderBar {
+    width: 0%;
+    height: 100%;
+    background: var(--text-color-boot);
+    transition: width 0.2s linear;
+}
+
+.bootStatus {
+    font-size: 0.9em;
+    color: var(--text-color-dim);
+}
+
+@keyframes blinkCursor {
+    50% { opacity: 0; }
+}
+
+@media (max-width: 480px) {
+    .bootText {
+        font-size: 1em;
+    }
+}

@@ -1,0 +1,18 @@
+# 依赖
+/node_modules
+
+# 构建输出
+/dist
+/build
+/out
+
+# WebStorm/JetBrains IDE 配置文件
+.idea/
+
+# 环境变量文件
+.env
+.env.local
+
+# 其他
+.DS_Store
+npm-debug.log*

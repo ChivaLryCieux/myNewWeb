@@ -1,0 +1,45 @@
+.mouse-follow-text {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    mix-blend-mode: screen;
+}
+
+.mouse-follow-circular-text {
+    width: 100% !important;
+    height: 100% !important;
+    font-size: 14px;
+    color: var(--primary-glow-color, #00ffff);
+    text-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+.mouse-follow-circular-text span {
+    font-size: 12px !important;
+    text-transform: uppercase;
+    filter: drop-shadow(0 0 3px currentColor);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .mouse-follow-text {
+        display: none; /* 在移动设备上隐藏，避免影响触摸体验 */
+    }
+}
+
+/* 减少动画对性能敏感用户的影响 */
+@media (prefers-reduced-motion: reduce) {
+    .mouse-follow-text {
+        display: none;
+    }
+}
+
+/* 鼠标悬停状态的增强效果 */
+.mouse-follow-text:hover .mouse-follow-circular-text {
+    color: var(--secondary-glow-color, #FFD700);
+    text-shadow: 0 0 8px currentColor, 0 0 16px currentColor;
+}

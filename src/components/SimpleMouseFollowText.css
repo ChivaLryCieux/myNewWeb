@@ -1,0 +1,35 @@
+.simple-mouse-follow-text {
+    position: fixed;
+    width: 100px;
+    height: 100px;
+    pointer-events: none;
+    z-index: 9999;
+    font-family: var(--font-heiti, sans-serif);
+    color: var(--text-color-main, #ffffff);
+    font-size: 12px;
+    font-weight: 600;
+    /* 移除荧光效果 */
+}
+
+.simple-mouse-follow-text .letter {
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    /* 移除荧光效果 */
+}
+
+/* 移除荧光动画 */
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .simple-mouse-follow-text {
+        display: none; /* 在移动设备上隐藏 */
+    }
+}
+
+/* 减少动画对性能敏感用户的影响 */
+@media (prefers-reduced-motion: reduce) {
+    .simple-mouse-follow-text {
+        display: none;
+    }
+}

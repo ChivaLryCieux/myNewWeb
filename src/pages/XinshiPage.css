@@ -1,0 +1,237 @@
+/* 这个文件定义了 XinshiPage 的专属样式。
+  顶部的 body.xinshi-theme 规则用于覆盖 index.css 的全局主题。
+*/
+
+/* 当 XinshiPage 加载时，这条规则会生效 */
+body.xinshi-theme {
+    /* 定义本页面的专属颜色和字体变量 */
+    --text-color: #e0e0e0;
+    --title-color: #f0e68c;
+    --panel-bg: rgba(18, 18, 28, 0.85);
+    --border-color: rgba(240, 230, 140, 0.3);
+    --scrollbar-bg: #1a1a2a;
+    --scrollbar-thumb: #f0e68c;
+    --header-font: 'Noto Serif SC', serif;
+    --body-font: 'Noto Sans SC', sans-serif;
+
+    /* 使用 !important 来确保这些样式能覆盖全局 index.css 的样式 */
+    background: #00000a !important;
+    color: var(--text-color) !important;
+    font-family: var(--body-font) !important;
+    animation: none !important;
+    perspective: none !important;
+    overflow: hidden !important; /* 确保此页面不滚动 */
+}
+
+/* 同样，隐藏首页的背景网格 */
+body.xinshi-theme::before {
+    display: none !important;
+}
+
+
+/* --- 以下是 XinshiPage 组件内部元素的样式 --- */
+
+.xinshi-page-container {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+#canvas-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: grab;
+}
+
+#canvas-container:active {
+    cursor: grabbing;
+}
+
+#title-overlay {
+    position: absolute;
+    top: 3vh;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    color: white;
+    z-index: 10;
+    pointer-events: none;
+    text-shadow: 0 0 10px rgba(240, 230, 140, 0.7);
+}
+
+#main-title {
+    font-family: var(--header-font);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    color: var(--title-color);
+    margin-bottom: 0.5rem;
+}
+
+.subtitle-line {
+    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+    font-weight: 300;
+    line-height: 1.4;
+    color: var(--text-color);
+    margin: 0;
+}
+
+#instructions {
+    position: absolute;
+    bottom: 3vh;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--panel-bg);
+    backdrop-filter: blur(5px);
+    padding: 0.8rem 1.5rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    z-index: 10;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 0 15px rgba(240, 230, 140, 0.2);
+}
+
+#content-panel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    width: clamp(300px, 90vw, 800px);
+    height: 80vh;
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    border: 1px solid var(--border-color);
+    z-index: 100;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    color: var(--text-color);
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    flex-direction: column;
+}
+
+#content-panel.visible {
+    display: flex;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+#close-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    font-size: 2rem;
+    line-height: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+    z-index: 101;
+}
+
+#close-button:hover {
+    color: var(--title-color);
+    transform: rotate(90deg);
+}
+
+.content-body {
+    padding: 40px 40px 20px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+/* Custom scrollbar */
+.content-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.content-body::-webkit-scrollbar-track {
+    background: var(--scrollbar-bg);
+    border-radius: 10px;
+}
+
+.content-body::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    border-radius: 10px;
+    border: 2px solid var(--scrollbar-bg);
+}
+
+.content-body h2 {
+    font-family: var(--header-font);
+    color: var(--title-color);
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.content-body h3 {
+    font-family: var(--header-font);
+    font-size: 1.5rem;
+    color: var(--text-color);
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.content-body p {
+    font-size: 1rem;
+    line-height: 1.8;
+    margin-bottom: 1rem;
+    text-align: justify;
+}
+
+.content-body .key-sentence {
+    font-family: var(--header-font);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--title-color);
+    margin: 2rem auto;
+    padding: 1rem;
+    background-color: rgba(0,0,0,0.2);
+    border-left: 4px solid var(--title-color);
+    border-radius: 4px;
+    text-align: center;
+}
+
+.content-body blockquote {
+    background: rgba(0,0,0,0.15);
+    border-left: 4px solid var(--border-color);
+    margin: 1.5rem 1rem;
+    padding: 1rem 1.5rem;
+    font-style: italic;
+    border-radius: 4px;
+}
+
+.content-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    background-color: rgba(0,0,0,0.1);
+    font-size: 0.95rem;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.content-body th, .content-body td {
+    border: 1px solid var(--border-color);
+    padding: 0.8rem 1rem;
+    text-align: left;
+}
+
+.content-body th {
+    background-color: rgba(240, 230, 140, 0.1);
+    font-family: var(--header-font);
+    font-weight: 700;
+    color: var(--title-color);
+}

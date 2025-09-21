@@ -1,0 +1,306 @@
+/* MaogaiPage.module.css */
+
+:global(body.maogai-theme) {
+    /* 1. 定义毛概页面的专属颜色变量 */
+    --color-red-50: #FEF2F2;
+    --color-red-100: #FEE2E2;
+    --color-red-200: #FECACA;
+    --color-red-600: #DC2626;
+    --color-red-700: #B91C1C;
+    --color-red-800: #991B1B;
+    --color-amber-50: #FFFBEB;
+    --color-amber-100: #FEF3C7;
+    --color-neutral-300: #D4D4D4;
+    --color-neutral-500: #737373;
+    --color-neutral-600: #525252;
+    --color-neutral-700: #404040;
+    --color-neutral-800: #262626;
+
+    /* 2. 覆盖全局的背景、字体和颜色 */
+    background: var(--color-amber-50) !important;
+    font-family: 'Noto Sans SC', sans-serif !important;
+    color: var(--color-neutral-800) !important;
+
+    /* 3. 移除动画和3D效果 */
+    animation: none !important;
+    perspective: none !important;
+    padding: 0 !important;
+}
+
+/* 4. 隐藏首页的背景网格效果 */
+:global(body.maogai-theme::before) {
+    display: none !important;
+}
+
+
+/* --- 从这里开始，是 MaogaiPage 组件的局部样式 --- */
+.container {
+    max-width: 72rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.section {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+}
+
+.container > .section:not(:first-of-type) {
+    margin-top: 4rem;
+}
+
+.sectionIntro {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    max-width: 56rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sectionIntro p {
+    color: var(--color-neutral-600);
+    line-height: 1.75;
+}
+
+.gridContainer {
+    display: grid;
+    gap: 2rem;
+}
+
+/* --- Navigation Bar --- */
+.mainNav {
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+}
+
+.navContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 4rem;
+}
+
+.navLink {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-neutral-700);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.navLink:hover {
+    color: var(--color-red-700);
+}
+
+/* --- Hero Section --- */
+.heroSection {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: linear-gradient(to bottom right, var(--color-amber-100), var(--color-red-50), var(--color-amber-100));
+    padding: 2rem;
+    text-align: center;
+}
+
+.heroContent {
+    max-width: 56rem;
+}
+
+.heroTitle {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--color-red-800);
+    margin-bottom: 1.5rem;
+}
+
+.heroSubtitle {
+    font-size: 1.25rem;
+    color: var(--color-neutral-700);
+    margin-bottom: 1rem;
+}
+
+.heroText {
+    font-size: 1.125rem;
+    color: var(--color-neutral-600);
+}
+
+.heroText + .heroText {
+    margin-top: 1rem;
+}
+
+/* --- General Card & Title --- */
+.sectionTitle {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+    font-weight: 700;
+    color: var(--color-red-700);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.card {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+}
+
+.card h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-red-700);
+    margin-bottom: 1rem;
+}
+
+.card p {
+    color: var(--color-neutral-600);
+    margin-bottom: 0.75rem;
+}
+
+.card ul {
+    list-style-position: inside;
+}
+
+.detailsToggle {
+    margin-top: 1rem;
+    font-size: 0.875rem;
+    color: var(--color-red-600);
+    font-weight: 500;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.detailsToggle:hover {
+    color: var(--color-red-800);
+}
+
+.detailsContent {
+    margin-top: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--color-neutral-500);
+}
+
+/* --- Specific Components --- */
+.keywordTagContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.keywordTag {
+    display: inline-block;
+    background-color: var(--color-red-100);
+    color: var(--color-red-700);
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.keywordTag:hover {
+    background-color: var(--color-red-200);
+}
+
+.poemContainer {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+    text-align: center;
+    margin: 2rem auto;
+    max-width: 42rem;
+    border-left: 5px solid var(--color-red-700);
+}
+
+.poemContainer h4 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--color-neutral-800);
+    margin-bottom: 0.25rem;
+}
+
+.poemContainer pre {
+    color: var(--color-neutral-700);
+    white-space: pre-wrap;
+    font-size: 1rem;
+    line-height: 1.75;
+    text-align: left;
+}
+
+.productCard {
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+    overflow: hidden;
+    transform: scale(1);
+    transition: transform 0.3s ease;
+}
+
+.productCard:hover {
+    transform: scale(1.05);
+}
+
+.productImage {
+    width: 100%;
+    height: 14rem;
+    object-fit: cover;
+}
+
+.p-4 {
+    padding: 1rem;
+}
+
+.productCard h4 {
+    font-weight: 600;
+    color: var(--color-neutral-800);
+}
+
+/* --- Footer --- */
+.mainFooter {
+    background-color: var(--color-neutral-800);
+    color: var(--color-neutral-300);
+    text-align: center;
+    padding: 1.5rem;
+    margin-top: 4rem;
+}
+
+.mainFooter p {
+    font-size: 0.875rem;
+}
+
+/* --- Responsive Design --- */
+@media (min-width: 768px) {
+    .container {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+    .gridContainer {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .poemContainer pre {
+        text-align: center;
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid-container-3-cols {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}

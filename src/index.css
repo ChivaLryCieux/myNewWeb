@@ -1,0 +1,57 @@
+:root {
+    /* 移除不再需要的背景渐变变量 */
+    --primary-glow-color: #00ffff;
+    --secondary-glow-color: #FFD700;
+    --accent-color-dim: #7f00ff;
+    --text-color-main: rgba(230, 230, 255, 0.95);
+    --text-color-dim: rgba(180, 180, 220, 0.8);
+    --text-color-boot: #00ff99;
+
+    --border-color-hud: rgba(0, 255, 255, 0.3);
+    --border-color-hud-light: rgba(0, 255, 255, 0.7);
+    --border-color-hud-active: var(--primary-glow-color);
+    --content-bg: rgba(5, 10, 25, 0.35);
+
+    --font-title: 'Audiowide', 'Orbitron', cursive;
+    --font-heiti: "SimHei", "Microsoft YaHei", "PingFang SC", "WenQuanYi Micro Hei", sans-serif;
+    --font-button: 'Exo 2', 'Gruppo', sans-serif;
+    --font-body: 'Roboto', 'Microsoft YaHei', sans-serif;
+    --font-mono: 'Share Tech Mono', 'Courier New', monospace;
+
+    --glow-text-primary: 0 0 5px var(--primary-glow-color), 0 0 10px var(--primary-glow-color), 0 0 15px var(--primary-glow-color);
+    --glow-text-secondary-definition: 0 0 6px var(--secondary-glow-color), 0 0 12px var(--secondary-glow-color), 0 0 18px var(--secondary-glow-color), 0 0 2px #fff;
+
+    --glow-box-primary: 0 0 12px var(--primary-glow-color), 0 0 20px var(--primary-glow-color);
+    --glow-box-primary-inset: inset 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    /* 纯黑色背景，让Prism效果更突出 */
+    background: #000000;
+    min-height: 100vh;
+    font-family: var(--font-body);
+    color: var(--text-color-main);
+    perspective: 1500px;
+    
+    /* 全局滚动条设定 */
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* 移除网格背景 */
+
+/* 移除粒子背景样式 */
+
+/* 移除渐变动画 */
+
+/* 移除网格脉冲动画 */
+
+/* 响应式设计中，针对全局布局的调整 */
+@media (max-width: 768px) {
+    body {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+}

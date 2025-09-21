@@ -1,0 +1,13 @@
+.prism-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    
+    /* 确保 Prism 能够作为背景层正常工作 */
+    canvas {
+        display: block !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+}
