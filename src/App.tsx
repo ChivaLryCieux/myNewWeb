@@ -22,17 +22,17 @@ function App() {
     const getMouseFollowText = () => {
         switch (location.pathname) {
             case '/':
-                return '✦ 探索创意边界 • 追寻灵感轨迹 • 创造数字艺术 • ';
+                return '✦ • 探索创意边界 • 追寻灵感轨迹 • 创造数字艺术 • ';
             case '/poetry':
-                return '✨ 诗意流淌 • 文字之美 • 心灵的声音 • ';
+                return '✨ • 诗意流淌 • 文字之美 • 心灵的声音 • ';
             case '/design':
-                return '✨ 设计之道 • 美学探索 • 视觉语言 • ';
+                return '✨ • 设计之道 • 美学探索 • 视觉语言 • ';
             case '/xinshi':
-                return '✨ 新诗韵律 • 现代表达 • 情感流淌 • ';
+                return '✨ • 新诗韵律 • 现代表达 • 情感流淌 • ';
             case '/maogai':
-                return '✨ 毛概智慧 • 理论探索 • 思想之光 • ';
+                return '✨ • 毛概智慧 • 理论探索 • 思想之光 • ';
             default:
-                return '✦ 探索创意边界 • 追寻灵感轨迹 • 创造数字艺术 • ';
+                return '✦ • 探索创意边界 • 追寻灵感轨迹 • 创造数字艺术 • ';
         }
     };
 

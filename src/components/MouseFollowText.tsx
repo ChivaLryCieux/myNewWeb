@@ -17,7 +17,6 @@ const MouseFollowText: React.FC<MouseFollowTextProps> = ({
     text = "Follow Your Dreams • Create Your Future • ",
     spinDuration = 15,
     size = 120,
-    followSpeed = 0.3,
     offset = { x: 0, y: 0 },
     className = '',
     enabled = true
