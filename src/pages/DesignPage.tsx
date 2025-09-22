@@ -15,7 +15,7 @@ export const DesignPage: React.FC = () => {
             image: bushnellImg,
             alt: 'Bushnell纪念设计',
             caption: ['纪念Bushnell', '2024早春'],
-            hoverText: '“让我们用数字世界的方式缅怀，让像素成为永恒的纪念碑”',
+            hoverText: '“美国，你会愤怒还是恐惧”',
             pixelColor: '#00ffff',
             gridSize: 8
         },
@@ -23,15 +23,15 @@ export const DesignPage: React.FC = () => {
             image: symbolImg,
             alt: '设计四秩序',
             caption: ['设计四秩序：符号', '2024春'],
-            hoverText: '“符号的力量在于其能够超越语言，用最简单的形式表达最复杂的思想”',
+            hoverText: '“符号，能指，与心”',
             pixelColor: '#FFD700',
             gridSize: 9
         },
         {
             image: hanggaoImg,
             alt: '航高设计封面',
-            caption: ['为航高设计的资料封面', '滋味庞杂', '2024隆冬'],
-            hoverText: '“在复杂中寻找简约，在混沌中创造秩序”',
+            caption: ['为航高设计的资料封面', '2024隆冬'],
+            hoverText: '“滋味庞杂”',
             pixelColor: '#ff6b6b',
             gridSize: 7
         }
@@ -44,8 +44,10 @@ export const DesignPage: React.FC = () => {
             <h1 className={`content-title ${styles.pageTitle}`}>设计展示</h1>
 
             <div className={styles.backButtonContainer}>
-                {/* 3. 使用 Link 组件替代原始的 button onclick */}
-                <Link to="/" className="nav-button">返回首页</Link>
+                <Link to="/" className={styles.backButton}>
+                    <span className={styles.buttonIcon}>←</span>
+                    返回首页
+                </Link>
             </div>
 
             <div className={styles.galleryContainer}>

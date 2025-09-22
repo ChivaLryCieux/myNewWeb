@@ -1,0 +1,263 @@
+.poetry-page {
+    min-height: 100vh;
+    color: var(--text-color-main);
+    padding: 2rem;
+    font-family: 'Microsoft YaHei', 'SimSun', serif;
+    position: relative;
+    z-index: 1;
+    isolation: isolate;
+}
+
+.poetry-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem 0;
+}
+
+.poetry-title {
+    font-size: 2.5rem;
+    color: #ff6b6b;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
+    font-weight: 300;
+    letter-spacing: 0.1em;
+}
+
+.poetry-subtitle {
+    font-size: 1.1rem;
+    color: #a8d8ea;
+    font-style: italic;
+    opacity: 0.8;
+}
+
+.poems-container {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    gap: 2.5rem;
+}
+
+.poem-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.poem-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.poem-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.poem-card:hover::before {
+    opacity: 1;
+}
+
+.poem-card.ancient {
+    border-left: 4px solid #ff6b6b;
+}
+
+.poem-card.modern {
+    border-left: 4px solid #4ecdc4;
+}
+
+.poem-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.poem-title {
+    font-size: 1.4rem;
+    color: #fff;
+    margin: 0;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+}
+
+.poem-date {
+    font-size: 0.9rem;
+    color: #a8d8ea;
+    opacity: 0.8;
+    font-style: italic;
+    flex-shrink: 0;
+}
+
+.poem-content {
+    line-height: 1.8;
+    font-size: 1.05rem;
+    color: #e8e8e8;
+    margin-bottom: 1rem;
+    white-space: pre-line;
+}
+
+.poem-line {
+    margin-bottom: 0.3rem;
+    transition: color 0.2s ease;
+}
+
+.poem-line:hover {
+    color: #fff;
+}
+
+.empty-line {
+    height: 0.8rem;
+}
+
+.poem-card.ancient .poem-content {
+    text-align: center;
+    font-family: 'STKaiti', 'KaiTi', 'SimSun', serif;
+    letter-spacing: 0.1em;
+}
+
+.poem-card.modern .poem-content {
+    text-align: left;
+    font-family: 'Microsoft YaHei', sans-serif;
+    letter-spacing: 0.02em;
+}
+
+.poem-note {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+    color: #a8d8ea;
+    opacity: 0.8;
+}
+
+.poetry-footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+}
+
+.return-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.8rem 2rem;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.return-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+    background: linear-gradient(45deg, #ff5252, #26c6da);
+}
+
+.button-icon {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.return-button:hover .button-icon {
+    transform: translateX(-3px);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .poetry-page {
+        padding: 1rem;
+    }
+    
+    .poetry-title {
+        font-size: 2rem;
+    }
+    
+    .poem-card {
+        padding: 1.5rem;
+    }
+    
+    .poem-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .poem-content {
+        font-size: 1rem;
+    }
+    
+    .poem-card.ancient .poem-content {
+        text-align: left;
+    }
+}
+
+@media (max-width: 480px) {
+    .poetry-page {
+        padding: 0.5rem;
+    }
+    
+    .poetry-title {
+        font-size: 1.6rem;
+    }
+    
+    .poem-card {
+        padding: 1rem;
+        margin: 0.5rem 0;
+    }
+    
+    .poem-content {
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+}
+
+/* 确保图片完整展示，不被裁剪 */
+.poem-image,
+.poem-card img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    margin: 1rem 0;
+    max-width: 100%;
+    display: block;
+}
+
+/* 打印样式 */
+@media print {
+    .poetry-page {
+        background: white;
+        color: black;
+    }
+    
+    .poem-card {
+        background: white;
+        border: 1px solid #ccc;
+        box-shadow: none;
+        page-break-inside: avoid;
+        margin-bottom: 2rem;
+    }
+    
+    .return-button {
+        display: none;
+    }
+}

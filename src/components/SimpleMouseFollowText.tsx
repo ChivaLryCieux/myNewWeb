@@ -23,7 +23,10 @@ const SimpleMouseFollowText: React.FC<SimpleMouseFollowTextProps> = ({
         }
 
         const handleMouseMove = (e: MouseEvent) => {
-            setMousePosition({ x: e.clientX, y: e.clientY });
+            setMousePosition({ 
+                x: e.clientX, 
+                y: e.clientY 
+            });
             if (!isVisible) {
                 setIsVisible(true);
             }
@@ -48,7 +51,7 @@ const SimpleMouseFollowText: React.FC<SimpleMouseFollowTextProps> = ({
 
     // 将文字转换为字符数组
     const letters = Array.from(text);
-    const radius = 50; // 圆形半径
+    const radius = 50;
 
     return (
         <motion.div

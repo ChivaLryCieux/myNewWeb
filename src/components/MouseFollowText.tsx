@@ -37,18 +37,15 @@ const MouseFollowText: React.FC<MouseFollowTextProps> = ({
         }
 
         const handleMouseMove = (e: MouseEvent) => {
-            // 更新鼠标位置，加上偏移量
             mouseX.set(e.clientX + offset.x);
             mouseY.set(e.clientY + offset.y);
             
-            // 显示文字
             if (!isVisible) {
                 setIsVisible(true);
             }
         };
 
         const handleMouseLeave = () => {
-            // 当鼠标离开窗口时隐藏文字
             setIsVisible(false);
         };
 

@@ -1,5 +1,4 @@
 :root {
-    /* 移除不再需要的背景渐变变量 */
     --primary-glow-color: #00ffff;
     --secondary-glow-color: #FFD700;
     --accent-color-dim: #7f00ff;
@@ -28,27 +27,15 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    /* 纯黑色背景，让Prism效果更突出 */
     background: #000000;
     min-height: 100vh;
     font-family: var(--font-body);
     color: var(--text-color-main);
     perspective: 1500px;
-    
-    /* 全局滚动条设定 */
     overflow-y: auto;
     overflow-x: hidden;
 }
 
-/* 移除网格背景 */
-
-/* 移除粒子背景样式 */
-
-/* 移除渐变动画 */
-
-/* 移除网格脉冲动画 */
-
-/* 响应式设计中，针对全局布局的调整 */
 @media (max-width: 768px) {
     body {
         padding-top: 2rem;

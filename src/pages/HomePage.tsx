@@ -107,7 +107,6 @@ export const HomePage: React.FC = () => {
                         <Link to="/design" className={styles.navButton}>设计作品</Link>
                         <Link to="/xinshi" className={styles.navButton}>新诗汇报</Link>
                         <Link to="/maogai" className={styles.navButton}>毛概专题</Link>
-                        <Link to="/projects" className={styles.navButton}>最近项目</Link>
                     </div>
                 </div>
             </div>
