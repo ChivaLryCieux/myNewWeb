@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import styles from './BootSequence.module.css';
 
-// 类型定义 (未改变)
+// 类型定义
 type TextMessage = {
     text: string;
     type: 'text' | 'status' | 'textfinal';
@@ -29,7 +29,6 @@ export const BootSequence: React.FC<BootSequenceProps> = ({ onBootFinish }) => {
             return;
         }
 
-        // [关键修改]：精简动画序列，并加快了进度条速度
         const bootMessages: BootMessage[] = [
             { text: "INITIATING INTERFACE V5...\n", type: 'text' },
             { type: 'loader', duration: 1500, steps: 20 },
