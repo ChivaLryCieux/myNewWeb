@@ -1,794 +1,279 @@
-/* ==========================================================================
-   CSS Variables - 设计系统
-   ========================================================================== */
-:root {
-    /* 颜色系统 */
-    --primary-glow-color: #00ffff;
-    --secondary-glow-color: #FFD700;
-    --accent-color-dim: #7f00ff;
-
-    /* 文本颜色 */
-    --text-main: rgba(230, 230, 255, 0.95);
-    --text-dim: rgba(180, 180, 220, 0.8);
-    --text-boot: #00ff99;
-    --text-white: #ffffff;
-    --text-highlight: rgba(255, 215, 0, 0.98);
-
-    /* 边框颜色 */
-    --border-hud: rgba(0, 255, 255, 0.3);
-    --border-hud-light: rgba(0, 255, 255, 0.7);
-    --border-hud-active: var(--primary-glow-color);
-
-    /* 背景颜色 */
-    --bg-main: #000000;
-    --bg-content: rgba(5, 10, 25, 0.35);
-    --bg-card: rgba(255, 255, 255, 0.05);
-    --bg-card-hover: rgba(255, 255, 255, 0.1);
-
-    /* 字体系统 */
-    --font-title: 'Audiowide', 'Orbitron', cursive;
-    --font-heiti: "SimHei", "Microsoft YaHei", "PingFang SC", "WenQuanYi Micro Hei", sans-serif;
-    --font-button: 'Exo 2', 'Gruppo', sans-serif;
-    --font-body: 'Roboto', 'Microsoft YaHei', sans-serif;
-    --font-mono: 'Share Tech Mono', 'Courier New', monospace;
-    --font-chinese: 'STKaiti', 'KaiTi', 'SimSun', serif;
-
-    /* 阴影效果 */
-    --glow-text-primary: 0 0 5px var(--primary-glow-color), 0 0 10px var(--primary-glow-color), 0 0 15px var(--primary-glow-color);
-    --glow-text-secondary: 0 0 6px var(--secondary-glow-color), 0 0 12px var(--secondary-glow-color), 0 0 18px var(--secondary-glow-color), 0 0 2px #fff;
-    --glow-box-primary: 0 0 12px var(--primary-glow-color), 0 0 20px var(--primary-glow-color);
-    --glow-box-inset: inset 0 0 10px rgba(0, 255, 255, 0.3);
-
-    /* 间距系统 */
-    --spacing-xs: 0.5rem;
-    --spacing-sm: 1rem;
-    --spacing-md: 1.5rem;
-    --spacing-lg: 2rem;
-    --spacing-xl: 3rem;
-    --spacing-xxl: 4rem;
-
-    /* 边框半径 */
-    --radius-sm: 8px;
-    --radius-md: 15px;
-    --radius-lg: 20px;
-    --radius-full: 50%;
-
-    /* 过渡效果 */
-    --transition-fast: 0.15s ease-out;
-    --transition-normal: 0.3s ease;
-    --transition-slow: 0.6s ease;
+/* --- 字体导入 --- */
+@font-face {
+    /* 1. 为字体创建一个自定义名称 */
+    font-family: 'bei';
+    /* 2. 提供字体文件的相对路径 */
+    src: url('./assets/fonts/bei.ttf') format('truetype');
+    /* 可选：定义字体的粗细和样式 */
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
 }
 
-/* ==========================================================================
-   基础重置和全局样式
-   ========================================================================== */
-*,
-*::before,
-*::after {
+@font-face {
+    font-family: 'ke';
+    src: url('./assets/fonts/ke.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* --- 基础与布局样式 --- */
+body, html {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
+    background-color: #f4f1ea;
+    font-family: 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
 }
 
-/* 滚动条隐藏 - 统一处理 */
-*::-webkit-scrollbar {
-    width: 0;
-    background: transparent;
-}
-
-* {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
-html {
-    overflow-x: hidden;
-    scroll-behavior: smooth;
-}
-
-body {
-    background: var(--bg-main);
-    font-family: var(--font-body);
-    color: var(--text-main);
-    overflow-x: hidden;
-    overscroll-behavior: auto;
-    line-height: 1.6;
-}
-
-#root {
-    min-height: 100vh;
-    overflow: visible;
-    isolation: isolate;
-}
-
-/* ==========================================================================
-   共用组件样式
-   ========================================================================== */
-
-/* 品牌标识 */
-.brand {
+/* --- 固定悬浮元素样式 父元素 --- */
+.fixed-overlay {
     position: fixed;
-    top: 30px;
-    left: 30px;
     z-index: 1000;
-    font-family: var(--font-mono);
-    font-size: 1rem;
-    font-weight: 500;
-    backdrop-filter: blur(20px);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-md) var(--spacing-lg);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-size: 0.8rem;
+    color: #ffffff;
+    mix-blend-mode: difference;
+    padding: 30px;
+    max-width: 350px;
+    line-height: 1.5;
+    pointer-events: none;
 }
 
-/* 卡片样式 */
-.card {
-    background: var(--bg-card);
-    border-radius: var(--radius-md);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    transition: all var(--transition-normal);
-}
+/* --- 三个角落固定悬浮元素样式 --- */
+.top-right { top: 0; right: 0; text-align: right; font-family: 'bei', sans-serif; font-size: 1.5vw; }
+.bottom-left { bottom: 0; left: 0; }
+.bottom-right { bottom: 0; right: 0; text-align: right; }
 
-.card:hover {
-    background: var(--bg-card-hover);
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-/* 按钮基础样式 */
-.button {
-    padding: var(--spacing-sm) var(--spacing-lg);
-    background: rgba(0, 255, 255, 0.1);
-    border: 1px solid var(--border-hud);
-    color: var(--primary-glow-color);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: all var(--transition-normal);
-    text-decoration: none;
-    display: inline-block;
-    font-family: var(--font-button);
-}
-
-.button:hover {
-    background: rgba(0, 255, 255, 0.2);
-    border-color: var(--border-hud-light);
-    transform: translateY(-2px);
-}
-
-/* ==========================================================================
-   滚动容器系统
-   ========================================================================== */
-.continuous-scroll-container {
-    width: 100%;
-    min-height: 100vh;
-    position: relative;
-    isolation: isolate;
-}
-
-.scroll-section {
-    width: 100%;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-/* 背景渐变样式 */
-.home-section,
-.design-section {
-    background: linear-gradient(135deg, rgba(139, 0, 0, 0.9) 0%, rgba(255, 0, 0, 0.8) 100%);
-}
-
-.poetry-section {
-    background: linear-gradient(135deg, rgba(20, 20, 40, 0.8) 0%, rgba(40, 20, 60, 0.8) 100%);
-}
-
-/* 过渡条 */
-.transition-section {
-    background: var(--bg-main);
-    color: #ff0000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
-    min-height: 80px;
-    height: 80px;
-}
-
-.transition-content {
-    width: 100%;
-    white-space: nowrap;
-    padding: 0.3rem 0;
-}
-
-.scrolling-text {
-    display: inline-block;
-    animation: scrollText 10s linear infinite;
-    font-family: var(--font-title);
-    font-size: 1.2rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-}
-
-.scrolling-text span {
-    margin-right: 30px;
-}
-
-@keyframes scrollText {
-    from { transform: translateX(100%); }
-    to { transform: translateX(-100%); }
-}
-
-/* ==========================================================================
-   首页样式
-   ========================================================================== */
-.home-main-wrapper {
-    opacity: 1; /* 确保默认可见 */
-    pointer-events: auto; /* 确保可交互 */
-    transition: opacity 1s ease-in-out 0.3s;
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: var(--spacing-lg) var(--spacing-sm);
-}
-
-.home-main-wrapper.loaded {
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.home-content-new {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    justify-items: center;
-    width: 100%;
-    max-width: 1400px;
-    gap: var(--spacing-xxl);
-    padding: var(--spacing-xl) 2.5rem;
-    position: relative;
-    transition: transform var(--transition-fast);
-}
-
-/* 文本区域 */
-.home-left-text {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    text-align: right;
-    gap: 0.8rem;
-}
-
-.home-right-text {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    text-align: left;
-    gap: 0.8rem;
-}
-
-/* 头像 */
-.avatar-image {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: var(--radius-full);
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 4px 15px rgba(255, 255, 255, 0.1);
-    transition: transform var(--transition-normal), box-shadow var(--transition-normal);
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    display: block; /* 确保图片正确显示 */
-}
-
-.avatar-image:hover {
-    transform: scale(1.05);
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5), 0 6px 20px rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-/* 文本样式和动画 */
-.text-line {
-    font-size: clamp(1.1rem, 2.5vw, 1.4rem);
-    color: rgba(255, 255, 255, 0.95);
-    font-weight: 300;
-    line-height: 1.4;
-    opacity: 1; /* 默认可见 */
-    transform: translateY(0); /* 默认位置 */
-    animation: fadeInUp var(--transition-slow) cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    display: block; /* 确保文本正确显示 */
-}
-
-.highlight-text {
-    color: var(--text-highlight);
-    font-weight: 400;
-    font-size: clamp(1.3rem, 3vw, 1.8rem);
-    text-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
-}
-
-/* 动画延迟类 */
-.animate-line-1 { animation-delay: 0.2s; }
-.animate-line-2 { animation-delay: 0.4s; }
-.animate-line-3 { animation-delay: 0.6s; }
-.animate-line-4 { animation-delay: 0.8s; }
-.animate-line-5 { animation-delay: 1.0s; }
-.animate-line-6 { animation-delay: 1.2s; }
-
-.home-hint-text {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.6);
-    text-align: center;
-    font-style: italic;
-    opacity: 1; /* 默认可见 */
-    animation: fadeInHint 0.8s ease-out 2s forwards;
-    margin-top: var(--spacing-lg);
-    display: block; /* 确保文本正确显示 */
-}
-
-@keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeInHint {
-    to { opacity: 1; }
-}
-
-/* ==========================================================================
-   诗歌页面样式
-   ========================================================================== */
-.poetry-page {
-    width: 100%;
-    min-height: 100vh;
-    color: var(--text-main);
-    padding: var(--spacing-xxl) var(--spacing-lg);
-    font-family: var(--font-heiti);
-    position: relative;
-    z-index: 1;
-    isolation: isolate;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.poetry-header {
-    text-align: center;
-    margin-bottom: var(--spacing-xl);
-    padding: var(--spacing-lg) 0;
-}
-
-.poetry-title {
-    font-size: 2.5rem;
-    color: #ff6b6b;
-    margin-bottom: var(--spacing-xs);
-    text-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
-    font-weight: 300;
-    letter-spacing: 0.1em;
-}
-
-.poetry-subtitle {
-    font-size: 1.1rem;
-    color: #a8d8ea;
-    font-style: italic;
-    opacity: 0.8;
-}
-
-.poems-container {
-    max-width: 900px;
+/* --- 内容排版样式 --- */
+.content {
+    max-width: 800px;
     margin: 0 auto;
-    display: grid;
-    gap: 2.5rem;
+    padding: 10vh 5vw;
+    font-size: 1.2rem;
+    line-height: 2.2;
+    color: #333;
+    text-align: justify;
+}
+.content h1 { text-align: center; font-size: 2.5rem; margin-bottom: 2rem; }
+.content p { margin-bottom: 1.5em; text-indent: 2em; }
+
+/* About Me部分中文字体设置 */
+#about-me p {
+    font-family: 'ke', 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
 }
 
-.poem-card {
-    padding: var(--spacing-lg);
+.poem { text-align: center; font-size: 1.3rem; line-height: 2.5; margin-top: 3rem; }
+
+/* --- 头像容器样式，实现文字环绕 --- */
+.avatar-container {
+    float: left; /* 让容器浮动 */
+    shape-outside: circle(50%); /* 定义环绕形状为圆形 */
+    width: 200px; /* 头像容器的宽度 */
+    height: 200px; /* 头像容器的高度 */
+    margin: 0 2em 1em 0; /* 右侧和底部留出空间，让文字环绕 */
+    border-radius: 50%; /* 使容器成为圆形 */
+    overflow: hidden; /* 隐藏超出容器的图片部分 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 添加一些阴影效果 */
+}
+
+.avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 确保图片覆盖整个容器 */
+}
+
+/* 清除浮动，防止后续内容受到影响 */
+.content p:first-of-type::before {
+    content: "";
+    display: table;
+}
+
+/* --- 图层揭露效果样式 --- */
+.reveal-container {
     position: relative;
+    height: 200vh; /* 提供滚动区域 */
+}
+
+/* 1. 让 sticky-wrapper 成为唯一的粘性定位元素 */
+.sticky-wrapper {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    width: 100%;
     overflow: hidden;
 }
 
-.poem-card::before {
-    content: '';
+/* 2. 两个图层都使用绝对定位，在 sticky-wrapper 内部堆叠 */
+.reveal-layer {
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
-    opacity: 0;
-    transition: opacity var(--transition-normal);
+    width: 100%;
+    height: 100%;
 }
 
-.poem-card:hover::before {
+/* 3. 上层图层 z-index 更高 */
+.top-layer {
+    z-index: 2;
+    background-color: #f4f1ea;
+}
+
+/* 4. 下层图层（魔方容器）z-index 较低，并移除错误的 margin-top */
+#rubiks-cube-container {
+    z-index: 1;
+    background-color: #000000;
+    cursor: grab;
+}
+#rubiks-cube-container:active { cursor: grabbing; }
+
+
+/* --- 第一页分栏样式 --- */
+.first-page-layout {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+.first-page-text {
+    flex: 0 0 50%;
+    box-sizing: border-box;
+    padding: 5vh 5vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.first-page-text h1 {
+    font-size: 5rem;
+    color: #333;
+    margin: 0;
+}
+.first-page-image {
+    flex: 0 0 50%;
+    height: 100%;
+}
+.first-page-image img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+}
+
+/* --- 跑马灯样式 --- */
+.marquee-container {
+    width: 100%;
+    overflow: hidden;
+    background-color: #000;
+    color: #fff;
+    padding: 1rem 0;
+}
+.marquee-track { display: inline-block; animation: marquee 20s linear infinite; white-space: nowrap; }
+.marquee-track span { font-size: 1.1rem; padding: 0 2rem; }
+@keyframes marquee {
+    from { transform: translateX(0%); }
+    to { transform: translateX(-50%); }
+}
+
+/* --- Regarding Sections Split View --- */
+.regarding-container {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+    position: relative;
+}
+.regarding-container.reverse {
+    flex-direction: row-reverse;
+}
+.regarding-text {
+    width: 50%;
+    padding: 8vh 6vw;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
+}
+.regarding-text .text-wrapper {
+    max-width: 650px;
+    margin: 0 auto;
+}
+.regarding-text h1 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: #333;
+    font-family: Helvetica, Arial, sans-serif;
+}
+.regarding-text p {
+    margin-bottom: 1.5em;
+    text-indent: 2em;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    color: #333;
+    text-align: left;
+    font-family: Helvetica, Arial, sans-serif;
+}
+.regarding-background {
+    width: 50%;
+    position: absolute;
+    height: 100%;
+    top: 0;
+    transition: transform 0.5s ease;
+    z-index: 2;
+}
+.regarding-container:not(.reverse) .regarding-background {
+    right: 0;
+    transform: translateX(0);
+}
+.regarding-container:not(.reverse) .regarding-background.shifted {
+    transform: translateX(-100%);
+}
+.regarding-container.reverse .regarding-background {
+    left: 0;
+    transform: translateX(0);
+}
+.regarding-container.reverse .regarding-background.shifted {
+    transform: translateX(100%);
+}
+.regarding-chinese {
+    position: absolute;
+    width: 50%;
+    height: 100%;
+    top: 0;
+    z-index: 3;
+    padding: 8vh 6vw;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+.regarding-container:not(.reverse) .regarding-chinese {
+    right: 0;
+}
+.regarding-container.reverse .regarding-chinese {
+    left: 0;
+}
+.regarding-chinese.visible {
     opacity: 1;
 }
-
-.poem-card.ancient {
-    border-left: 4px solid #ff6b6b;
-}
-
-.poem-card.modern {
-    border-left: 4px solid #4ecdc4;
-}
-
-.poem-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: var(--spacing-md);
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
-}
-
-.poem-title {
-    font-size: 1.4rem;
-    color: var(--text-white);
-    margin: 0;
-    font-weight: 400;
-    letter-spacing: 0.05em;
-}
-
-.poem-date {
-    font-size: 0.9rem;
-    color: #a8d8ea;
-    opacity: 0.8;
-    font-style: italic;
-    flex-shrink: 0;
-}
-
-.poem-content {
-    line-height: 1.8;
-    font-size: 1.05rem;
-    color: #e8e8e8;
-    margin-bottom: var(--spacing-sm);
-    white-space: pre-line;
-}
-
-.poem-line {
-    margin-bottom: 0.3rem;
-    transition: color 0.2s ease;
-}
-
-.poem-line:hover {
-    color: var(--text-white);
-}
-
-.empty-line {
-    height: 0.8rem;
-}
-
-.poem-card.ancient .poem-content {
-    text-align: center;
-    font-family: var(--font-chinese);
-    letter-spacing: 0.1em;
-}
-
-.poem-card.modern .poem-content {
-    text-align: left;
-    font-family: var(--font-heiti);
-    letter-spacing: 0.02em;
-}
-
-.poem-note {
-    margin-top: var(--spacing-md);
-    padding-top: var(--spacing-sm);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    font-size: 0.9rem;
-    color: #a8d8ea;
-    opacity: 0.8;
-}
-
-.poetry-footer {
-    text-align: center;
-    margin-top: var(--spacing-xl);
-    padding-top: var(--spacing-lg);
-}
-
-/* ==========================================================================
-   设计页面样式
-   ========================================================================== */
-.design-page-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: var(--spacing-xxl) var(--spacing-lg);
-    position: relative;
-    width: 100%;
-    min-height: 100vh;
-    max-width: 100%;
+.regarding-chinese .text-wrapper {
+    max-width: 650px;
     margin: 0 auto;
-    justify-content: flex-start;
-    overflow: hidden;
 }
-
-.design-page-title {
-    width: 100%;
-    margin-bottom: var(--spacing-lg);
-    text-align: center;
-    position: relative;
+.regarding-chinese h1 {
     font-size: 2.5rem;
-    color: var(--text-main);
+    margin-bottom: 2rem;
+    color: #333;
+    font-family: 'ke', 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
 }
-
-/* 横向滚动画廊 */
-.design-horizontal-scroll-wrapper {
-    width: 100%;
-    height: 60vh;
-    position: relative;
-    padding: var(--spacing-lg) 0;
-}
-
-.design-gallery-horizontal {
-    display: flex;
-    gap: var(--spacing-xl);
-    padding: var(--spacing-lg);
-    height: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-behavior: smooth;
-    align-items: center;
-    transform: translateZ(0);
-    backface-visibility: hidden;
-    will-change: scroll-position;
-    /* 添加以下样式以改善滚动体验 */
-    -webkit-overflow-scrolling: touch; /* iOS设备上的流畅滚动 */
-    scrollbar-width: none; /* Firefox隐藏滚动条 */
-    -ms-overflow-style: none; /* IE/Edge隐藏滚动条 */
-}
-
-/* 隐藏WebKit浏览器的滚动条 */
-.design-gallery-horizontal::-webkit-scrollbar {
-    display: none;
-}
-
-.design-gallery-item-horizontal {
-    flex: 0 0 auto;
-    width: 350px;
-    height: 400px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    background: var(--bg-card);
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-md);
-    transition: transform var(--transition-normal), background var(--transition-normal);
-    position: relative;
-    /* 添加触摸优化 */
-    touch-action: manipulation;
-}
-
-.design-gallery-item-horizontal:hover {
-    transform: translateY(-5px);
-    background: var(--bg-card-hover);
-}
-
-.design-gallery-item-horizontal .design-image-container {
-    width: 100%;
-    height: 300px;
-    margin-bottom: var(--spacing-sm);
-}
-
-/* 网格布局画廊 */
-.design-gallery-container {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2.5rem;
-    justify-items: center;
-    padding: var(--spacing-sm) 0;
-    max-width: 1400px;
-    margin: 0 auto;
-}
-
-.design-gallery-item {
-    width: 100%;
-    max-width: 320px;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: var(--spacing-sm);
-    border-radius: var(--radius-lg);
-    background: var(--bg-card);
-    transition: transform var(--transition-normal), background var(--transition-normal);
-}
-
-.design-gallery-item:hover {
-    transform: translateY(-5px);
-    background: var(--bg-card-hover);
-}
-
-/* 图片容器和样式 */
-.design-image-container {
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-xs);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-}
-
-.design-gallery-image {
-    width: 100%;
-    height: auto;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--radius-md);
-    transition: transform var(--transition-normal), border-color var(--transition-normal);
-}
-
-.design-gallery-image:hover {
-    transform: scale(1.02);
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-.design-hover-content {
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.75);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-md);
-    backdrop-filter: blur(8px);
-    border-radius: var(--radius-md);
-}
-
-.design-hover-text {
-    color: var(--text-white);
-    font-family: var(--font-heiti);
-    font-size: 1rem;
-    text-align: center;
-    line-height: 1.6;
-    font-weight: 400;
-    opacity: 0.95;
-}
-
-.design-gallery-caption {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
-    margin-top: var(--spacing-sm);
-    line-height: 1.5;
-    font-weight: 300;
-}
-
-.scroll-hint {
-    margin-top: var(--spacing-lg);
-    text-align: center;
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.9rem;
-    font-style: italic;
-    opacity: 0;
-    animation: fadeInHint 0.8s ease-out 1s forwards;
-}
-
-/* ==========================================================================
-   响应式设计
-   ========================================================================== */
-@media (max-width: 768px) {
-    /* 全局调整 */
-    :root {
-        --spacing-xxl: 2rem;
-        --spacing-xl: 1.5rem;
-    }
-
-    /* 首页移动端 */
-    .home-content-new {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto auto auto;
-        gap: var(--spacing-lg);
-        padding: var(--spacing-lg) var(--spacing-md);
-        text-align: center;
-    }
-
-    .home-left-text,
-    .home-right-text {
-        align-items: center;
-        text-align: center;
-        gap: var(--spacing-xs);
-    }
-
-    .text-line {
-        font-size: clamp(1rem, 3vw, 1.2rem);
-    }
-
-    .highlight-text {
-        font-size: clamp(1.2rem, 4vw, 1.5rem);
-    }
-
-    .avatar-image {
-        width: 120px;
-        height: 120px;
-    }
-
-    /* 滚动区域 */
-    .scroll-section {
-        padding: var(--spacing-sm);
-    }
-
-    /* 诗歌页面 */
-    .poetry-page {
-        padding: var(--spacing-sm);
-    }
-
-    .poetry-title {
-        font-size: 2rem;
-    }
-
-    .poem-card {
-        padding: var(--spacing-md);
-    }
-
-    .poem-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--spacing-xs);
-    }
-
-    .poem-content {
-        font-size: 1rem;
-    }
-
-    .poem-card.ancient .poem-content {
-        text-align: left;
-    }
-
-    /* 设计页面 */
-    .design-page-container {
-        padding: var(--spacing-lg) var(--spacing-sm);
-    }
-
-    .design-page-title {
-        font-size: 2rem;
-    }
-
-    .design-horizontal-scroll-wrapper {
-        height: 50vh;
-        padding: var(--spacing-sm) 0;
-    }
-
-    .design-gallery-horizontal {
-        gap: var(--spacing-lg);
-        padding: var(--spacing-sm);
-    }
-
-    .design-gallery-item-horizontal {
-        width: 280px;
-        height: 350px;
-        padding: var(--spacing-sm);
-    }
-
-    .design-gallery-item-horizontal .design-image-container {
-        height: 250px;
-    }
-
-    .design-gallery-container {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-lg);
-    }
-
-    .design-gallery-item {
-        max-width: 100%;
-        padding: 0.8rem;
-    }
-
-    .design-hover-text {
-        font-size: 0.9rem;
-        padding: var(--spacing-sm);
-    }
-
-    .scroll-hint {
-        font-size: 0.8rem;
-        margin-top: var(--spacing-sm);
-    }
+.regarding-chinese p {
+    margin-bottom: 1.5em;
+    text-indent: 2em;
+    font-size: 1.2rem;
+    line-height: 2.2;
+    color: #333;
+    text-align: justify;
+    font-family: 'ke', 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
 }

@@ -1,451 +1,614 @@
-import React, { useState, useRef, useEffect } from 'react';
-import Shuffle from './components/Shuffle';
-import PixelTransition from './components/PixelTransition';
+import React, { useEffect, useRef, useState } from 'react';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import artworkImage from './assets/images/1-1.png';
+import avatarImage from './assets/images/avatar.png'; 
+import image2_1 from './assets/images/2-1.jpg';
+import image2_2 from './assets/images/2-2.jpg';
+import image2_3 from './assets/images/2-3.jpg';
+import image3_1 from './assets/images/3-1.png';
+import image3_2 from './assets/images/3-2.png';
+import image3_3 from './assets/images/3-3.png';
 
-// 导入样式
-import './index.css';
-import avatarImg from './assets/neoAvater.png';
-import bushnellImg from './assets/bushnell.jpg';
-import symbolImg from './assets/symbol.jpg';
-import hanggaoImg from './assets/hanggao.jpg';
-import p1Img from './assets/p1.png';
-import p2Img from './assets/p2.png';
-import p3Img from './assets/p3.png';
-import p4Img from './assets/p4.png';
-import p5Img from './assets/p5.png';
-
-// 诗歌数据
-interface Poem {
-    id: string;
-    title: string;
-    content: string;
-    date?: string;
-    note?: string;
-    type: 'ancient' | 'modern';
-}
-
-const poems: Poem[] = [
-    {
-        id: '1',
-        title: '如梦令·清篆',
-        content: `信念横充心岸，璧日临吾袖缎。
-取墨掌纹间，刻下雄深清篆。
-风颤，风颤，
-影曳花飘云散。`,
-        date: '2018.6',
-        type: 'ancient'
-    },
-    {
-        id: '2',
-        title: '水调歌头·既竟中考与同窗别',
-        content: `夜半三更起，寰月更加清。小楼幽悄铃铎，惊醒若闻鹰。
-掀走一衾慵倦，光暖如焚烈火，室里六灯明。案上群书放，提笔为功名。
-
-三年逝，七月别，意难平。铭心常梦，梦碎夜起瞰昏庭。
-当定来年时日，又约街旁肆宇，举酒至宵冥。再话少年事，寰月悄无声。`,
-        date: '2020.12.18',
-        type: 'ancient'
-    },
-    {
-        id: '3',
-        title: '述怀',
-        content: `南风开璧日，云乱坐凭栏。
-玄豹黯章采，青萍落袖冠。
-餐英初识味，造物复归寒。
-万里何须北？神州天地宽。`,
-        date: '2024.1.16',
-        note: '发表于《中华辞赋》2024年第十期',
-        type: 'ancient'
-    },
-    {
-        id: '4',
-        title: '指针的错误使用',
-        content: `不要企图锚定一场风暴，
-灌满雨水的神经突触只愿意
-小住暂留。尤其当昨夜的
-代码固结成岩——你出土的，
-只有挂满昙花的错误。
-
-南非的人道主义或是
-西班牙传统冷汤，很遗憾，
-能指只能无能地指向能指。
-所幸演化没有完全褫夺
-可怜官能的所有孳息。
-
-若那种病症最终非法，
-若那场危机最终爆发，
-请调用装在诗句里的诗评：
-Error: 'I' has no attribute 'Name'.`,
-        date: '2025.6.3',
-        note: '同济大学"新诗导读与创作"课程作业',
-        type: 'modern'
-    }
-];
-
-// 设计作品数据
-const designWorks = [
-    {
-        image: bushnellImg,
-        alt: 'Bushnell纪念设计',
-        caption: ['纪念Bushnell', '2024早春'],
-        hoverText: '"美国，你会愤怒还是恐惧"',
-        pixelColor: '#00ffff',
-        gridSize: 8
-    },
-    {
-        image: symbolImg,
-        alt: '设计四秩序',
-        caption: ['设计四秩序：符号', '2024春'],
-        hoverText: '"符号，能指，与心"',
-        pixelColor: '#FFD700',
-        gridSize: 9
-    },
-    {
-        image: hanggaoImg,
-        alt: '航高设计封面',
-        caption: ['为航高设计的资料封面', '2024隆冬'],
-        hoverText: '"滋味庞杂"',
-        pixelColor: '#ff6b6b',
-        gridSize: 7
-    },
-    {
-        image: p1Img,
-        alt: '新设计作品一',
-        caption: ['新设计作品', '2024'],
-        hoverText: '"简洁与功能的平衡"',
-        pixelColor: '#4ecdc4',
-        gridSize: 8
-    },
-    {
-        image: p2Img,
-        alt: '新设计作品二',
-        caption: ['新设计作品', '2024'],
-        hoverText: '"触手可及的美学"',
-        pixelColor: '#9b59b6',
-        gridSize: 9
-    },
-    {
-        image: p3Img,
-        alt: '新设计作品三',
-        caption: ['新设计作品', '2024'],
-        hoverText: '"数字时代的视觉语言"',
-        pixelColor: '#e74c3c',
-        gridSize: 7
-    },
-    {
-        image: p4Img,
-        alt: '新设计作品四',
-        caption: ['新设计作品', '2024'],
-        hoverText: '"用户体验的艺术"',
-        pixelColor: '#f39c12',
-        gridSize: 8
-    },
-    {
-        image: p5Img,
-        alt: '新设计作品五',
-        caption: ['新设计作品', '2024'],
-        hoverText: '"品牌故事的视觉呈现"',
-        pixelColor: '#1abc9c',
-        gridSize: 9
-    }
-];
-
-// 首页组件
-const HomePage = () => {
-    const [isLoaded, setIsLoaded] = useState(true); // 默认设置为true，确保文字立即显示
-    const wrapperRef = useRef<HTMLDivElement>(null);
-    const contentRef = useRef<HTMLDivElement>(null);
+const App: React.FC = () => {
+    const rubiksCubeRef = useRef<HTMLDivElement>(null);
+    const rubiksCubeAppRef = useRef<any>(null);
+    const [literatureShifted, setLiteratureShifted] = useState(false);
+    const [designShifted, setDesignShifted] = useState(false);
+    const [aiShifted, setAiShifted] = useState(false);
 
     useEffect(() => {
-        // 确保组件加载后立即设置为loaded状态
-        setIsLoaded(true);
-    }, []);
+        gsap.registerPlugin(ScrollTrigger);
 
-    return (
-        <div className={`home-main-wrapper ${isLoaded ? 'loaded' : ''}`} ref={wrapperRef}>
-            <div className="home-content-new" ref={contentRef}>
-                {/* 左侧英文区域 */}
-                <div className="home-left-text">
-                    <div className="text-line animate-line-1">HELLO</div>
-                    <div className="text-line animate-line-2">THIS IS</div>
-                    <div className="text-line animate-line-3 highlight-text">
-                        <Shuffle 
-                            text="TEMPSYCHE"
-                            className="shuffle-text-en"
-                            tag="span"
-                            duration={0.6}
-                            shuffleTimes={1}
-                            animationMode="evenodd"
-                            maxDelay={0.1}
-                            stagger={0.03}
-                            threshold={0}
-                            rootMargin="0px"
-                            ease="power2.out"
-                            triggerOnHover={true}
-                            triggerOnce={false}
-                            respectReducedMotion={false}
-                        />
-                    </div>
-                    <div className="text-line animate-line-4">TONGJI UNIVERSITY</div>
-                    <div className="text-line animate-line-5">DUAL BACHELOR'S DEGREE PROGRAM IN</div>
-                    <div className="text-line animate-line-6">VISUAL COMMUNICATION DESIGN AND ARTIFICIAL INTELLIGENCE</div>
-                </div>
+        const scrollAnimation = gsap.to(".top-layer", {
+            y: "-100%",
+            ease: "none",
+            scrollTrigger: {
+                trigger: ".reveal-container",
+                start: "top top",
+                end: "bottom bottom",
+                scrub: 1,
+            },
+        });
 
-                {/* 中心头像区域 */}
-                <div className="home-center-avatar">
-                    <img src={avatarImg} alt="兹暂客头像" className="avatar-image" />
-                </div>
+        const RubiksCubeApp = {
+            scene: null as THREE.Scene | null,
+            camera: null as THREE.PerspectiveCamera | null,
+            renderer: null as THREE.WebGLRenderer | null,
+            controls: null as OrbitControls | null,
+            composer: null as EffectComposer | null,
+            rubiksCube: null as THREE.Group | null,
+            cubeletOriginalPositions: [] as THREE.Vector3[],
+            animationFrameId: null as number | null,
+            container: null as HTMLElement | null,
+            boundOnWindowResize: null as (() => void) | null,
 
-                {/* 右侧中文区域 */}
-                <div className="home-right-text">
-                    <div className="text-line animate-line-1">你好</div>
-                    <div className="text-line animate-line-2">我是</div>
-                    <div className="text-line animate-line-3 highlight-text">
-                        <Shuffle 
-                            text="兹暂客"
-                            className="shuffle-text-cn"
-                            tag="span"
-                            duration={0.6}
-                            shuffleTimes={1}
-                            animationMode="evenodd"
-                            maxDelay={0.1}
-                            stagger={0.03}
-                            threshold={0}
-                            rootMargin="0px"
-                            ease="power2.out"
-                            triggerOnHover={true}
-                            triggerOnce={false}
-                            respectReducedMotion={false}
-                        />
-                    </div>
-                    <div className="text-line animate-line-4">同济大学</div>
-                    <div className="text-line animate-line-5">视觉传达设计与人工智能</div>
-                    <div className="text-line animate-line-6">双学士学位在读</div>
-                </div>
-            </div>
-            
-            {/* 滚动提示 */}
-            <div className="home-hint-text">
-                滚动鼠标滚轮浏览内容
-            </div>
-        </div>
-    );
-};
+            init: function(containerElement: HTMLElement) {
+                this.container = containerElement;
+                this.scene = new THREE.Scene();
 
-// 诗歌页面组件
-const PoetryPage = () => {
-    return (
-        <div className="poetry-page">
-            <div className="poetry-header">
-                <h1 className="poetry-title">我的没什么用的诗</h1>
-                <p className="poetry-subtitle">我既在这，亦不在这</p>
-            </div>
+                this.camera = new THREE.PerspectiveCamera(75, this.container.clientWidth / this.container.clientHeight, 0.1, 1000);
+                this.camera.position.z = 15;
+                this.camera.position.y = 5;
 
-            <div className="poems-container">
-                {poems.map((poem) => (
-                    <div key={poem.id} className={`poem-card ${poem.type}`}>
-                        <div className="poem-header">
-                            <h2 className="poem-title">{poem.title}</h2>
-                            {poem.date && (
-                                <span className="poem-date">{poem.date}</span>
-                            )}
-                        </div>
-                        
-                        <div className="poem-content">
-                            {poem.content.split('\n').map((line, index) => (
-                                <div key={index} className={`poem-line ${line.trim() === '' ? 'empty-line' : ''}`}>
-                                    {line || '\u00A0'}
-                                </div>
-                            ))}
-                        </div>
-                        
-                        {poem.note && (
-                            <div className="poem-note">
-                                <em>{poem.note}</em>
-                            </div>
-                        )}
-                    </div>
-                ))}
-            </div>
+                this.renderer = new THREE.WebGLRenderer({ antialias: true });
+                this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+                this.renderer.setPixelRatio(window.devicePixelRatio);
+                this.container.appendChild(this.renderer.domElement);
 
-            <div className="poetry-footer">
-                {/* 移除返回按钮，保持简洁的设计 */}
-            </div>
-        </div>
-    );
-};
+                this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+                this.controls.enableDamping = true;
+                this.controls.dampingFactor = 0.05;
+                this.controls.enableZoom = false;
 
-// 设计页面组件
-const DesignPage = () => {
-    const scrollContainerRef = useRef<HTMLDivElement>(null);
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+                this.scene.add(ambientLight);
+                const pointLight = new THREE.PointLight(0xffffff, 1.5, 200);
+                pointLight.position.set(10, 15, 10);
+                this.scene.add(pointLight);
 
-    // 横向滚动事件处理
-    useEffect(() => {
-        const scrollContainer = scrollContainerRef.current;
-        if (!scrollContainer) return;
+                this.createRubiksCube();
 
-        // 处理滚轮事件，实现粘性横向滚动
-        const handleWheel = (e: WheelEvent) => {
-            // 获取设计区域的位置信息
-            const rect = scrollContainer.getBoundingClientRect();
-            
-            // 判断是否在设计区域的可视范围内
-            const isInViewport = (
-                rect.top < window.innerHeight && 
-                rect.bottom > 0
-            );
-            
-            // 如果不在可视区域，不处理
-            if (!isInViewport) {
-                return;
-            }
+                const renderScene = new RenderPass(this.scene!, this.camera!);
+                const bloomPass = new UnrealBloomPass(new THREE.Vector2(this.container.clientWidth, this.container.clientHeight), 1.5, 0.4, 0.85);
+                bloomPass.threshold = 0;
+                bloomPass.strength = 0.5;
+                bloomPass.radius = 0;
 
-            // 获取当前横向滚动位置
-            const scrollLeft = scrollContainer.scrollLeft;
-            const maxScrollLeft = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-            
-            // 进一步增加滚动倍率，让滚动更快
-            const scrollMultiplier = 3.5; // 原来的3.5倍速度
-            const scrollAmount = Math.abs(e.deltaY) * scrollMultiplier;
-            
-            // 判断滚动方向
-            const isScrollingDown = e.deltaY > 0;
-            const isScrollingUp = e.deltaY < 0;
-            
-            // 实现粘性横向滚动逻辑
-            if (isScrollingDown) {
-                // 向下滚动时，始终进行横向滚动直到最右边
-                if (scrollLeft < maxScrollLeft) {
-                    e.preventDefault();
-                    scrollContainer.scrollLeft += scrollAmount;
+                this.composer = new EffectComposer(this.renderer);
+                this.composer.addPass(renderScene);
+                this.composer.addPass(bloomPass);
+
+                this.boundOnWindowResize = this.onWindowResize.bind(this);
+                window.addEventListener('resize', this.boundOnWindowResize, false);
+            },
+
+            createRubiksCube: function() {
+                this.rubiksCube = new THREE.Group();
+                const cubeSize = 1, spacing = 0.1, N = 3;
+                const geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
+                const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.5, metalness: 0.5 });
+                const edgeMaterial = new THREE.LineBasicMaterial({ color: 0xeeeeee });
+
+                for (let x = 0; x < N; x++) {
+                    for (let y = 0; y < N; y++) {
+                        for (let z = 0; z < N; z++) {
+                            const cube = new THREE.Mesh(geometry, cubeMaterial.clone());
+                            const position = new THREE.Vector3(
+                                (x - (N - 1) / 2) * (cubeSize + spacing),
+                                (y - (N - 1) / 2) * (cubeSize + spacing),
+                                (z - (N - 1) / 2) * (cubeSize + spacing)
+                            );
+                            cube.position.copy(position);
+
+                            const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geometry), edgeMaterial);
+                            cube.add(edges);
+                            (cube as any).isTwitching = false;
+                            this.rubiksCube.add(cube);
+                            this.cubeletOriginalPositions.push(position.clone());
+                        }
+                    }
                 }
-            } else if (isScrollingUp) {
-                // 向上滚动时，只有在最左边才能竖直滚动
-                if (scrollLeft > 0) {
-                    e.preventDefault();
-                    scrollContainer.scrollLeft -= scrollAmount;
+                this.scene!.add(this.rubiksCube);
+            },
+
+            onWindowResize: function() {
+                if (!this.container || !this.camera || !this.renderer || !this.composer) return;
+                this.camera.aspect = this.container.clientWidth / this.container.clientHeight;
+                this.camera.updateProjectionMatrix();
+                this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
+                this.composer.setSize(this.container.clientWidth, this.container.clientHeight);
+            },
+
+            animate: function() {
+                if (!this.rubiksCube || !this.controls || !this.composer) return;
+                this.animationFrameId = requestAnimationFrame(this.animate.bind(this));
+                const time = Date.now() * 0.001;
+                this.rubiksCube.rotation.y += 0.002;
+
+                const breathAmplitude = 0.05, breathSpeed = 2;
+                this.rubiksCube.children.forEach((cubelet, i) => {
+                    const originalPos = this.cubeletOriginalPositions[i];
+                    if (!originalPos) return;
+                    const direction = originalPos.clone().normalize();
+                    const offset = Math.sin(time * breathSpeed + originalPos.length() * 0.5) * breathAmplitude;
+                    cubelet.position.copy(originalPos).add(direction.multiplyScalar(offset));
+                });
+
+                if (Math.random() > 0.965) {
+                    const randomCubelet = this.rubiksCube.children[Math.floor(Math.random() * this.rubiksCube.children.length)] as THREE.Mesh & { isTwitching?: boolean };
+                    if (randomCubelet && !randomCubelet.isTwitching) {
+                        randomCubelet.isTwitching = true;
+                        gsap.to(randomCubelet.rotation, {
+                            x: `+=${(Math.random() - 0.5) * Math.PI * 0.5}`,
+                            y: `+=${(Math.random() - 0.5) * Math.PI * 0.5}`,
+                            duration: 0.3,
+                            ease: 'power2.out',
+                            yoyo: true,
+                            repeat: 1,
+                            onComplete: () => {
+                                randomCubelet.rotation.set(0, 0, 0);
+                                randomCubelet.isTwitching = false;
+                            }
+                        });
+                    }
+                }
+
+                this.controls.update();
+                this.composer.render();
+            },
+
+            start: function() {
+                if (!this.animationFrameId) this.animate();
+            },
+
+            stop: function() {
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                    this.animationFrameId = null;
                 }
             }
         };
 
-        // 添加事件监听
-        window.addEventListener('wheel', handleWheel, { passive: false });
+        const cubeContainer = rubiksCubeRef.current;
+        if (cubeContainer) {
+            RubiksCubeApp.init(cubeContainer);
+            rubiksCubeAppRef.current = RubiksCubeApp;
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        rubiksCubeAppRef.current?.start();
+                    } else {
+                        rubiksCubeAppRef.current?.stop();
+                    }
+                });
+            }, { threshold: 0.01 });
+
+            observer.observe(cubeContainer);
+
+            return () => {
+                scrollAnimation.kill();
+                observer.disconnect();
+                rubiksCubeAppRef.current?.stop();
+
+                if (rubiksCubeAppRef.current?.boundOnWindowResize) {
+                    window.removeEventListener('resize', rubiksCubeAppRef.current.boundOnWindowResize);
+                }
+
+                if (cubeContainer && rubiksCubeAppRef.current?.renderer) {
+                    if (cubeContainer.contains(rubiksCubeAppRef.current.renderer.domElement)) {
+                        cubeContainer.removeChild(rubiksCubeAppRef.current.renderer.domElement);
+                    }
+                }
+            };
+        }
+    }, []);
+
+    // 3D Scroll Effect useEffect
+    useEffect(() => {
+        // Dynamically import Three.js modules
+        let THREE: any;
+        let textureLoader: any;
         
+        const initThreeJs = async () => {
+            // Dynamically import Three.js
+            const threeModule = await import('three');
+            THREE = threeModule;
+            
+            // Initialize the 3D scroll effect
+            initScrollEffect();
+        };
+        
+        const initScrollEffect = () => {
+            if (!THREE) return;
+            
+            // Configuration
+            const STAGES = [
+                { type: 'image', path: image3_1, duration: 150 },
+                { type: 'text',  stageIndex: 1, duration: 100 },
+                { type: 'image', path: image3_2, duration: 150 },
+                { type: 'text',  stageIndex: 3, duration: 100 },
+                { type: 'image', path: image3_3, duration: 150 },
+                { type: 'text',  stageIndex: 5, duration: 100 },
+            ];
+            
+            // Scene setup
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+            
+            const renderer = new THREE.WebGLRenderer({
+                canvas: document.querySelector('#three-canvas'),
+                antialias: true,
+                alpha: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            
+            // DOM Elements
+            const scrollContainer = document.querySelector('.scroll-container') as HTMLElement;
+            const textSections = document.querySelectorAll('.text-section');
+            
+            // Set Scroll Container Height
+            const totalDuration = STAGES.reduce((acc, stage) => acc + stage.duration, 0);
+            if (scrollContainer) {
+                scrollContainer.style.height = `${totalDuration}vh`;
+            }
+            
+            // Three.js Objects and Texture Loading
+            let paperMesh: any;
+            const textures: any = {}; // Cache for loaded textures
+            
+            // Preload all textures
+            let loadedTextures = 0;
+            const imageStages = STAGES.filter((s: any) => s.type === 'image');
+            
+            // Create texture loader
+            textureLoader = new THREE.TextureLoader();
+            
+            imageStages.forEach((stage: any) => {
+                textureLoader.load(stage.path, (texture: any) => {
+                    textures[stage.path] = texture;
+                    loadedTextures++;
+                    if (loadedTextures === imageStages.length) {
+                        initPaperMesh(); // Initialize with the first texture
+                        animate();
+                    }
+                });
+            });
+            
+            // GLSL (Shaders)
+            const simplexNoise = `
+                vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+                float snoise(vec2 v){ const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439); vec2 i  = floor(v + dot(v, C.yy) ); vec2 x0 = v -   i + dot(i, C.xx); vec2 i1; i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0); vec4 x12 = x0.xyxy + C.xxzz; x12.xy -= i1.xy; x12.zw -= 1.0 - i1.xy; i = mod(i, 289.0); vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 )) + i.x + vec3(0.0, i1.x, 1.0 )); vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0); m = m*m; m = m*m; vec3 x = 2.0 * fract(p * C.www) - 1.0; vec3 h = abs(x) - 0.5; vec3 ox = floor(x + 0.5); vec3 a0 = x - ox; m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h ); vec3 g; g.x  = a0.x  * x0.x  + h.x  * x0.y; g.yz = a0.yz * x12.xz + h.yz * x12.yw; return 130.0 * dot(m, g); }
+            `;
+            
+            function initPaperMesh() {
+                const firstStage = STAGES[0];
+                const firstTexture = firstStage.path ? textures[firstStage.path] : null;
+                
+                if (!firstTexture || !firstTexture.image) return;
+                
+                const aspectRatio = firstTexture.image.width / firstTexture.image.height;
+                const planeWidth = 4;
+                const planeHeight = planeWidth / aspectRatio;
+                
+                const paperGeometry = new THREE.PlaneGeometry(planeWidth, planeHeight, 64, 64);
+                const paperMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        u_time: { value: 0.0 },
+                        u_progress: { value: 0.0 },
+                        u_texture: { value: firstTexture }
+                    },
+                    vertexShader: `
+                        uniform float u_time;
+                        uniform float u_progress;
+                        varying vec2 vUv;
+                        void main() {
+                            vUv = uv;
+                            vec3 pos = position;
+                            // Reverse the float animation: it starts collapsed and floats as it appears
+                            float floatIntensity = 0.06 * u_progress;
+                            pos.x += sin(u_time * 0.5 + pos.y * 3.0) * floatIntensity;
+                            pos.y += cos(u_time * 0.7 + pos.x * 2.0) * floatIntensity;
+                            pos.z += sin(u_time * 1.2 + pos.y * 4.0) * floatIntensity;
+                            // The main animation is now reversed: from center to original position
+                            float easedProgress = smoothstep(0.0, 1.0, 1.0 - u_progress);
+                            pos = mix(pos, vec3(0.0), easedProgress);
+                            pos.z -= easedProgress * 2.0;
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        ${simplexNoise}
+                        uniform float u_time;
+                        uniform float u_progress;
+                        
+                        // ================== FIX WAS HERE ==================
+                        uniform sampler2D u_texture; // Corrected from samplerD to sampler2D
+                        // ================================================
+                        
+                        varying vec2 vUv;
+                        float fbm(vec2 st) {
+                            float value = 0.0; float amplitude = 0.5;
+                            for (int i = 0; i < 4; i++) {
+                                value += amplitude * snoise(st); st *= 2.0; amplitude *= 0.5;
+                            }
+                            return value;
+                        }
+                        void main() {
+                            vec4 textureColor = texture2D(u_texture, vUv);
+                            float noiseVal = fbm(vUv * 2.5);
+                            noiseVal = (noiseVal + 1.0) * 0.5;
+                            // Reversed the burn effect
+                            float burnThreshold = 1.0 - u_progress;
+                            if (noiseVal < burnThreshold) { discard; }
+                            float burnEdge = smoothstep(burnThreshold - 0.1, burnThreshold, noiseVal);
+                            textureColor.a *= burnEdge;
+                            if (textureColor.a < 0.1) { discard; }
+                            gl_FragColor = textureColor;
+                        }
+                    `,
+                    side: THREE.DoubleSide,
+                    transparent: true
+                });
+                
+                paperMesh = new THREE.Mesh(paperGeometry, paperMaterial);
+                scene.add(paperMesh);
+            }
+            
+            // Scroll event listener (core logic)
+            let currentStageIndex = 0;
+            let lastStageIndex = -1;
+            
+            const handleScroll = () => {
+                const scrollY = window.scrollY;
+                const vh = window.innerHeight;
+                let accumulatedHeight = 0;
+                
+                for (let i = 0; i < STAGES.length; i++) {
+                    const stage = STAGES[i];
+                    const stageHeight = stage.duration * vh / 100;
+                    
+                    if (scrollY < accumulatedHeight + stageHeight) {
+                        currentStageIndex = i;
+                        const stageScrollY = scrollY - accumulatedHeight;
+                        const stageProgress = stageScrollY / stageHeight;
+                        
+                        updateScene(currentStageIndex, stageProgress);
+                        break;
+                    }
+                    accumulatedHeight += stageHeight;
+                }
+            };
+            
+            window.addEventListener('scroll', handleScroll);
+            
+            function updateScene(stageIndex: number, stageProgress: number) {
+                const stage = STAGES[stageIndex];
+                
+                textSections.forEach(section => {
+                    const sectionStageIndex = parseInt((section as HTMLElement).dataset.stage || '0');
+                    if (stage.type === 'text' && sectionStageIndex === stage.stageIndex) {
+                        section.classList.add('is-visible');
+                    } else {
+                        section.classList.remove('is-visible');
+                    }
+                });
+                
+                if (!paperMesh) return;
+                
+                if (stage.type === 'image') {
+                    if (lastStageIndex !== stageIndex && stage.path) {
+                        const texture = textures[stage.path];
+                        if (texture) {
+                            paperMesh.material.uniforms.u_texture.value = texture;
+                            lastStageIndex = stageIndex;
+                        }
+                    }
+                    
+                    const start = 0.2;
+                    const end = 0.8;
+                    
+                    let shaderProgress = (stageProgress - start) / (end - start);
+                    shaderProgress = Math.max(0, Math.min(1, shaderProgress));
+                    
+                    paperMesh.visible = true;
+                    paperMesh.material.uniforms.u_progress.value = shaderProgress;
+                } else {
+                    paperMesh.visible = false;
+                }
+            }
+            
+            // Animation loop
+            const clock = new THREE.Clock();
+            function animate() {
+                if (!paperMesh) {
+                    requestAnimationFrame(animate);
+                    return;
+                }
+                const elapsedTime = clock.getElapsedTime();
+                paperMesh.material.uniforms.u_time.value = elapsedTime;
+                paperMesh.rotation.z = Math.sin(elapsedTime * 0.1) * 0.05;
+                renderer.render(scene, camera);
+                requestAnimationFrame(animate);
+            }
+            
+            // Window resize handler
+            const handleResize = () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            };
+            
+            window.addEventListener('resize', handleResize);
+            
+            // Cleanup function
+            return () => {
+                window.removeEventListener('scroll', handleScroll);
+                window.removeEventListener('resize', handleResize);
+            };
+        };
+        
+        // Initialize Three.js when component mounts
+        initThreeJs();
+        
+        // Cleanup function for useEffect
         return () => {
-            window.removeEventListener('wheel', handleWheel);
+            // Any necessary cleanup can be done here
         };
     }, []);
 
-    return (
-        <div className="design-page-container">
-            <h1 className="design-page-title">设计展示</h1>
+    const handleLiteratureMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        const container = e.currentTarget;
+        const containerRect = container.getBoundingClientRect();
+        const mouseX = e.clientX - containerRect.left;
+        const containerWidth = containerRect.width;
+        
+        // 如果鼠标在左半部分
+        if (mouseX < containerWidth / 2) {
+            if (literatureShifted) {
+                setLiteratureShifted(false);
+            }
+        } else {
+            // 如果鼠标在右半部分
+            if (!literatureShifted) {
+                setLiteratureShifted(true);
+            }
+        }
+    };
 
-            <div className="design-horizontal-scroll-wrapper">
-                <div 
-                    ref={scrollContainerRef}
-                    className="design-gallery-horizontal"
-                >
-                    {designWorks.map((work, index) => (
-                        <div key={index} className="design-gallery-item-horizontal">
-                            <PixelTransition
-                                firstContent={
-                                    <div className="design-image-container">
-                                        <img
-                                            src={work.image}
-                                            alt={work.alt}
-                                            className="design-gallery-image"
-                                            style={{ 
-                                                width: '100%', 
-                                                height: '100%', 
-                                                objectFit: 'contain',
-                                                objectPosition: 'center'
-                                            }}
-                                        />
-                                    </div>
-                                }
-                                secondContent={
-                                    <div className="design-hover-content">
-                                        <div className="design-hover-text">
-                                            {work.hoverText}
-                                        </div>
-                                    </div>
-                                }
-                                gridSize={work.gridSize}
-                                pixelColor={work.pixelColor}
-                                animationStepDuration={0.4}
-                                aspectRatio="100%"
-                                style={{ 
-                                    width: '100%', 
-                                    height: '100%',
-                                    border: '2px solid var(--border-color-hud)',
-                                    borderRadius: '15px',
-                                    overflow: 'hidden'
-                                }}
-                            />
-                            <p className="design-gallery-caption">
-                                {work.caption.map((line, lineIndex) => (
-                                    <React.Fragment key={lineIndex}>
-                                        {line}<br />
-                                    </React.Fragment>
-                                ))}
-                            </p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-            
-            {/* 横向滚动提示 */}
-            <div className="scroll-hint">
-                <span>← 滚动鼠标滚轮浏览作品 →</span>
-            </div>
-        </div>
-    );
-};
+    const handleDesignMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        const container = e.currentTarget;
+        const containerRect = container.getBoundingClientRect();
+        const mouseX = e.clientX - containerRect.left;
+        const containerWidth = containerRect.width;
+        
+        // 对于reverse布局，逻辑应该相反
+        // 如果鼠标在左半部分，应该显示中文（图片左移）
+        if (mouseX < containerWidth / 2) {
+            if (!designShifted) {
+                setDesignShifted(true);
+            }
+        } else {
+            // 如果鼠标在右半部分，应该显示英文（图片右移回原位）
+            if (designShifted) {
+                setDesignShifted(false);
+            }
+        }
+    };
 
-// 过渡条组件
-const TransitionBar = () => {
-    return (
-        <section className="scroll-section transition-section">
-            <div className="transition-content">
-                <div className="scrolling-text">
-                    <span>TO LEARN AND CREATE, FOR A MEANINGFUL LIFE AND A BETTER WORLD</span>
-                </div>
-            </div>
-        </section>
-    );
-};
+    const handleAiMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        const container = e.currentTarget;
+        const containerRect = container.getBoundingClientRect();
+        const mouseX = e.clientX - containerRect.left;
+        const containerWidth = containerRect.width;
+        
+        // 如果鼠标在左半部分
+        if (mouseX < containerWidth / 2) {
+            if (aiShifted) {
+                setAiShifted(false);
+            }
+        } else {
+            // 如果鼠标在右半部分
+            if (!aiShifted) {
+                setAiShifted(true);
+            }
+        }
+    };
 
-function App() {
     return (
         <>
-            {/* 固定在左上角的标识 Brand */}
-            <div className="brand">
-                <div>Tempsyche</div>
-                <div>兹暂客</div>
+            <div className="fixed-overlay top-right">千丈阴崖百丈溪 孤桐枝上凤偏宜</div>
+            <div className="fixed-overlay bottom-left">TO LEARN AND CREATE,<br />FOR A MEANINGFUL LIFE AND A BETTER WORLD</div>
+            <div className="fixed-overlay bottom-right">chivalrycieux@qq.com 2025</div>
+
+            <div className="reveal-container">
+                <div className="sticky-wrapper">
+                    <div className="reveal-layer" id="rubiks-cube-container" ref={rubiksCubeRef}></div>
+                    <div className="reveal-layer top-layer">
+                        <div className="first-page-layout">
+                            <div className="first-page-text">
+                                <h1>兹暂客</h1>
+                            </div>
+                            <div className="first-page-image">
+                                <img src={artworkImage} alt="Artwork" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            {/* 单页连续滚动容器 */}
-            <div className="continuous-scroll-container">
-                {/* 首页 */}
-                <section className="scroll-section home-section">
-                    <HomePage />
-                </section>
+            <div className="content" id="about-me">
+                <h1>About Me</h1>
+                <div className="avatar-container">
+                    <img src={avatarImage} alt="Avatar" className="avatar-image" />
+                </div>
+                <p>“大学之道，在明明德，在亲民，在止于至善。”在我还年幼的时候，我就已经将《大学》的三纲领背得滚瓜烂熟了。我初中的校训摘自论语，叫“君子不器”。孔子以此来说明君子不能像器物一样只有一种功用。我时常以此来告诉自己，人生一世，探求世间的无数真理，格物致知，同时品味不同的人生滋味，修身明德，乃是一种多姿多彩的生活方式，而这样怀揣不同知识与技艺的道德高尚的“君子”也正是一种理想的人格。</p>
+            </div>
 
-                {/* 过渡条 */}
-                <TransitionBar />
+            <div className="marquee-container">
+                <div className="marquee-track">
+                    <span>ChivaLry Cieux ★ ChivaLry Cieux ★ ChivaLry Cieux ★ ChivaLry Cieux ★ ChivaLry Cieux ★ ChivaLry Cieux ★ </span>
+                    <span>ChivaLry Cieux ★ ChivaLry Cieux ★ ChivaLry Cieux ★ ChivaLry Cieux ★ ChivaLry Cieux ★ ChivaLry Cieux ★ </span>
+                </div>
+            </div>
 
-                {/* 诗歌页面 */}
-                <section className="scroll-section poetry-section">
-                    <PoetryPage />
-                </section>
+            <div className="regarding-container" id="regarding-literature" onMouseMove={handleLiteratureMouseMove}>
+                <div className={`regarding-background ${literatureShifted ? 'shifted' : ''}`} style={{ backgroundImage: `url(${image2_1})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                <div className="regarding-text">
+                    <div className="text-wrapper">
+                        <h1>Regarding Literature</h1>
+                        <p>I began writing classical Chinese regulated verse at age 13, simultaneously composing and studying texts. My greatest inspirations came from the Book of Songs, Yuefu poetry, and Xin Qiji. Some of my poems have been published. I started studying philosophy in high school, but only after extensive exploration of politics, economics, and history. My philosophical journey began with S.T. Stumpf's thick History of Western Philosophy, progressing all the way to Lacanian psychoanalysis. The spirit of Marx has profoundly influenced me. By university, my prose writing finally broke free from the shackles of established writing styles, as I practiced the principle that "there is no fixed form in writing, with vividness being the most valuable." During moments of inspiration, I even won Tongji University's top literary prize. However, I no longer read poetry, philosophy, or prose. Currently, I am focusing on learning fiction writing.</p>
+                    </div>
+                </div>
+                <div className={`regarding-chinese ${literatureShifted ? 'visible' : ''}`}>
+                    <div className="text-wrapper">
+                        <h1>关于文学</h1>
+                        <p>我13岁开始写中国古典的格律诗，边写边读，最爱《诗经》乐府辛弃疾。诗作偶有发表。高中开始学哲学，但先广泛涉猎政治经济与历史，而后才从斯通普夫厚厚的《西方哲学史》开始，一直学到拉康精神分析。马克思的气概对我影响颇深。到大学之后，散文创作终于打破文风枷锁，躬行"文无定格，贵在鲜活"之道。灵光乍现的时候，也曾得过同济的第一。诗歌、哲学、散文，现在都不读了。现在学习小说。</p>
+                    </div>
+                </div>
+            </div>
 
-                {/* 设计页面 */}
-                <section className="scroll-section design-section">
-                    <DesignPage />
-                </section>
+            <div className="regarding-container reverse" id="regarding-design" onMouseMove={handleDesignMouseMove}>
+                <div className={`regarding-background ${designShifted ? 'shifted' : ''}`} style={{ backgroundImage: `url(${image2_2})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                <div className="regarding-text">
+                    <div className="text-wrapper">
+                        <h1>Regarding Design</h1>
+                        <p>Lacking innate musical talent or foundational fine arts training, I can only progress in design through persistent ideation and practice. While I have created numerous posters in graphic design, most have been ordinary, though I did produce main visuals for several international academic conferences. My video editing skills remain underdeveloped, and creating animations would likely be inefficient. Fortunately, my philosophical background provides theoretical grounding for discussing semiotics and signifiers in design thinking. Game design is currently in my learning phase – its connection with coding particularly fascinates me, and I look forward to exploring this field. As for front-end web design – interactive posters and user-controlled animations – the results of my work are presented here before you.</p>
+                    </div>
+                </div>
+                <div className={`regarding-chinese ${designShifted ? 'visible' : ''}`}>
+                    <div className="text-wrapper">
+                        <h1>关于设计</h1>
+                        <p>鄙人无音韵之天赋，亦无美术之基础，设计一途，只能靠多想多做。平面设计，海报做了不少，大都普普通通，好在曾为几场国际会议做过主视觉。视屏剪辑，学艺不精，要做动画，恐怕效率难以差强人意。设计思维，符号与能指，幸亏有些哲学基础，可供我夸夸其谈。游戏设计尚在学习中。不过其与代码有联系，我也饶有兴趣，大可期待一番。至于前端网页设计——可交互的海报，由你控制的动画——我所做的，就在你眼前了。</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="regarding-container" id="regarding-ai" onMouseMove={handleAiMouseMove}>
+                <div className={`regarding-background ${aiShifted ? 'shifted' : ''}`} style={{ backgroundImage: `url(${image2_3})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
+                <div className="regarding-text">
+                    <div className="text-wrapper">
+                        <h1>Regarding Artificial Intelligence</h1>
+                        <p> Calculus, linear algebra, and probability theory formed my initial mathematical foundation. Discrete mathematics, signal systems, and optimization theory became essential tools for deeper exploration. Combined with computer science and programming languages, these enabled my entry into machine learning. By integrating matrix multiplication with non-affine functions, I constructed artificial neural networks. Utilizing Gradient Boosting Decision Trees and Multilayer Perceptrons, I have won awards in domestic and international competitions. Later, I expanded into financial machine learning, quantitative finance, blockchain, and Web3 technologies. Future advanced studies remain open for further exploration.</p>
+                    </div>
+                </div>
+                <div className={`regarding-chinese ${aiShifted ? 'visible' : ''}`}>
+                    <div className="text-wrapper">
+                        <h1>关于人工智能</h1>
+                        <p>微积分、线性代数、概率论，都是最开始掌握的基础。离散数学、信号与系统、最优化理论，都是深入其中必须借助的工具。再加上计算机科学与编程语言，就可以进入机器学习的世界。再结合矩阵乘法与非仿射函数，就可以搭建起人工神经网络。借助梯度提升决策树与多层感知机，我也在国内国外各比赛、平台拿过一些奖。后来又涉猎了金融机器学习和量化金融，区块链与Web3。更深入的学习，就交给未来了。</p>
+                    </div>
+                </div>
             </div>
         </>
     );
-}
+};
 
 export default App;
