@@ -172,8 +172,22 @@ body, html {
     z-index: 1;
     background-color: #000000;
     cursor: grab;
+    position: relative;
 }
+
 #rubiks-cube-container:active { cursor: grabbing; }
+
+/* 魔方右移并在右半屏幕居中 */
+.rubiks-cube-right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 /* --- 跑马灯样式 --- */
 .marquee-container {

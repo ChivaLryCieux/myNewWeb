@@ -15,6 +15,116 @@ import image3_1 from './assets/images/3-1.png';
 import image3_2 from './assets/images/3-2.png';
 import image3_3 from './assets/images/3-3.png';
 
+// 魔方页面悬浮文字组件
+const FloatingText: React.FC<{
+    targetSectionId: string;
+    lines: string[]; // 传入的文字行数组
+}> = ({ targetSectionId, lines }) => {
+    const floatingRef = useRef<HTMLDivElement>(null);
+    const targetRef = useRef<HTMLDivElement>(null);
+    const [scrollY, setScrollY] = useState(0);
+
+    // 初始化目标元素引用
+    useEffect(() => {
+        targetRef.current = document.getElementById(targetSectionId) as HTMLDivElement;
+        handlePositionUpdate();
+    }, [targetSectionId]);
+
+    // 监听滚动事件
+    useEffect(() => {
+        const handleScroll = () => {
+            requestAnimationFrame(() => setScrollY(window.scrollY));
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    // 处理位置更新
+    const handlePositionUpdate = () => {
+        const floatingEl = floatingRef.current;
+        const targetEl = targetRef.current;
+        if (!floatingEl || !targetEl) return;
+
+        const targetRect = targetEl.getBoundingClientRect();
+        const targetTop = targetRect.top + window.scrollY;
+        const targetBottom = targetTop + targetRect.height;
+        const floatingHeight = floatingEl.offsetHeight || lines.length * 30; // 动态计算高度
+        const stopOffset = targetRect.height - floatingHeight - 20;
+        const currentScroll = scrollY;
+        const scrollInTarget = currentScroll - targetTop;
+
+        floatingEl.style.position = '';
+        floatingEl.style.top = '';
+        floatingEl.style.left = '';
+
+        if (currentScroll < targetTop) {
+            floatingEl.style.position = 'absolute';
+            floatingEl.style.top = '20px';
+            floatingEl.style.left = '20px';
+        } else if (currentScroll >= targetTop && currentScroll < targetBottom - floatingHeight) {
+            if (scrollInTarget < stopOffset) {
+                floatingEl.style.position = 'fixed';
+                floatingEl.style.top = '20px';
+                floatingEl.style.left = `${targetRect.left + 20}px`;
+            } else {
+                floatingEl.style.position = 'absolute';
+                floatingEl.style.top = `${stopOffset}px`;
+                floatingEl.style.left = '20px';
+            }
+        } else {
+            floatingEl.style.position = 'absolute';
+            floatingEl.style.top = `${stopOffset}px`;
+            floatingEl.style.left = '20px';
+        }
+    };
+
+    // 滚动和窗口大小变化时更新位置
+    useEffect(() => {
+        handlePositionUpdate();
+    }, [scrollY, lines]); // 当文字内容变化时重新计算
+
+    useEffect(() => {
+        const handleResize = () => handlePositionUpdate();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [lines]);
+
+    return (
+        <div
+            ref={floatingRef}
+            style={{
+                pointerEvents: 'none',
+                zIndex: 100,
+                lineHeight: 1.6, // 行高
+            }}
+        >
+            {lines.map((line, index) => (
+                // 用React.Fragment包裹每行和换行符（最后一行不需要换行）
+                <React.Fragment key={index}>
+          <span
+              style={{
+                  color: 'white',
+                  fontWeight: 200,
+                  // 奇数行（index从0开始，所以用index % 2 === 0判断）使用字体A
+                  // 偶数行使用字体B
+                  fontFamily: index % 2 === 0
+                      ? 'ke, sans-serif'  // 奇数行字体
+                      : 'serif, helvetica',  // 偶数行字体
+                  fontSize: index % 2 === 0
+                      ? '2rem'  // 奇数行字大小
+                      : '1.5rem',  // 偶数行字大小
+              }}
+          >
+            {line}
+          </span>
+                    {/* 最后一行不添加换行 */}
+                    {index !== lines.length - 1 && <br />}
+                </React.Fragment>
+            ))}
+        </div>
+    );
+};
+
 const App: React.FC = () => {
     const rubiksCubeRef = useRef<HTMLDivElement>(null);
     const rubiksCubeAppRef = useRef<any>(null);
@@ -465,6 +575,9 @@ const App: React.FC = () => {
         };
     }, []);
 
+
+
+    // regarding部分图片左右移动效果
     const handleLiteratureMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         const container = e.currentTarget;
         const containerRect = container.getBoundingClientRect();
@@ -525,13 +638,32 @@ const App: React.FC = () => {
 
     return (
         <>
+            {/* 三个角落固定悬浮元素 */}
             <div className="fixed-overlay top-right">千丈阴崖百丈溪 孤桐枝上凤偏宜</div>
             <div className="fixed-overlay bottom-left">TO LEARN AND CREATE,<br />FOR A MEANINGFUL LIFE AND A BETTER WORLD</div>
             <div className="fixed-overlay bottom-right">chivalrycieux@qq.com 2025</div>
 
             <div className="reveal-container">
                 <div className="sticky-wrapper">
-                    <div className="reveal-layer" id="rubiks-cube-container" ref={rubiksCubeRef}></div>
+                    <div className="reveal-layer" id="rubiks-cube-container">
+                        {/* 悬浮文字组件 */}
+                        <FloatingText
+                            targetSectionId="rubiks-cube-container"
+                            lines={[
+                                "高中就读于遵义航天高级中学",
+                                "Attended Zunyi Aerospace Senior High School",
+                                "现就读于同济大学",
+                                "currently enrolled in the dual bachelor's degree program",
+                                "视觉传达设计与人工智能",
+                                "in Visual Communication Design and Artificial Intelligence",
+                                "双学士学位项目",
+                                "at Tongji University, Shanghai"
+                            ]}
+
+                        />
+                        <div ref={rubiksCubeRef} className="rubiks-cube-right"></div>
+                    </div>
+
                     <div className="reveal-layer top-layer">
                         <div className="first-page-layout">
                             <div className="first-page-text">
@@ -545,6 +677,7 @@ const App: React.FC = () => {
                 </div>
             </div>
 
+            {/* About Me部分 */}
             <div className="content" id="about-me">
                 <h1>About Me</h1>
                 <div className="avatar-container">
@@ -560,6 +693,7 @@ const App: React.FC = () => {
                 </div>
             </div>
 
+            {/* regarding部分 */}
             <div className="regarding-container" id="regarding-literature" onMouseMove={handleLiteratureMouseMove}>
                 <div className={`regarding-background ${literatureShifted ? 'shifted' : ''}`} style={{ backgroundImage: `url(${image2_1})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
                 <div className="regarding-text">
