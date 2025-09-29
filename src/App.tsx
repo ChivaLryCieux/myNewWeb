@@ -6,6 +6,9 @@ import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+import MapComponent from './components/MapComponent';
+
 import artworkImage from './assets/images/1-1.png';
 import avatarImage from './assets/images/avatar.png'; 
 import image2_1 from './assets/images/2-1.jpg';
@@ -653,11 +656,11 @@ const App: React.FC = () => {
                                 "高中就读于遵义航天高级中学",
                                 "Attended Zunyi Aerospace Senior High School",
                                 "现就读于同济大学",
-                                "currently enrolled in the dual bachelor's degree program",
+                                "Currently enrolled in the dual bachelor's degree program",
                                 "视觉传达设计与人工智能",
-                                "in Visual Communication Design and Artificial Intelligence",
+                                "In Visual Communication Design and Artificial Intelligence",
                                 "双学士学位项目",
-                                "at Tongji University, Shanghai"
+                                "At Tongji University, Shanghai"
                             ]}
 
                         />
@@ -675,6 +678,12 @@ const App: React.FC = () => {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* 嵌入地图组件 */}
+            <div className="map-section" style={{ width: '100%', height: '100vh' }}>
+                {/* 地图组件 */}
+                <MapComponent />
             </div>
 
             {/* About Me部分 */}
