@@ -160,7 +160,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ className = '' }) => {
         <div
             className={`map-wrapper ${className}`}
             style={{
-                width: '100vw',
+                width: '100%', // 改为100%而不是100vw
                 height: '100vh',
                 padding: '5vw',
                 backgroundColor: '#000',
