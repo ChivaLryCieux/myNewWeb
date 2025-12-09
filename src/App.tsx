@@ -686,6 +686,7 @@ const App: React.FC = () => {
                 <MapComponent />
             </div>
 
+
             {/* About Me部分 */}
             <div className="content" id="about-me">
                 <h1>About Me</h1>
