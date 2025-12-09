@@ -670,7 +670,7 @@ const App: React.FC = () => {
                     <div className="reveal-layer top-layer">
                         <div className="first-page-layout">
                             <div className="first-page-text">
-                                <h1>兹暂客：徐梦瑜，别看了</h1>
+                                <h1>兹暂客</h1>
                             </div>
                             <div className="first-page-image">
                                 <img src={artworkImage} alt="Artwork" />

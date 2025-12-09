@@ -50,7 +50,7 @@ body, html {
     color: #ffffff;
     mix-blend-mode: difference;
     padding: 30px;
-    max-width: 350px;
+    max-width: 400px;
     line-height: 1.5;
     pointer-events: none;
 }
