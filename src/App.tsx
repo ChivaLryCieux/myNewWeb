@@ -14,6 +14,9 @@ import avatarImage from './assets/images/avatar.png';
 import image2_1 from './assets/images/2-1.jpg';
 import image2_2 from './assets/images/2-2.jpg';
 import image2_3 from './assets/images/2-3.jpg';
+import image3_1 from './assets/images/3-1.png';
+import image3_2 from './assets/images/3-2.png';
+import image3_3 from './assets/images/3-3.png';
 
 // 魔方页面悬浮文字组件
 const FloatingText: React.FC<{
@@ -320,6 +323,263 @@ const App: React.FC = () => {
         }
     }, []);
 
+    // 3D Scroll Effect useEffect
+    useEffect(() => {
+        // Dynamically import Three.js modules
+        let THREE: any;
+        let textureLoader: any;
+        
+        const initThreeJs = async () => {
+            // Dynamically import Three.js
+            const threeModule = await import('three');
+            THREE = threeModule;
+            
+            // Initialize the 3D scroll effect
+            initScrollEffect();
+        };
+        
+        const initScrollEffect = () => {
+            if (!THREE) return;
+            
+            // Configuration
+            const STAGES = [
+                { type: 'image', path: image3_1, duration: 150 },
+                { type: 'text',  stageIndex: 1, duration: 100 },
+                { type: 'image', path: image3_2, duration: 150 },
+                { type: 'text',  stageIndex: 3, duration: 100 },
+                { type: 'image', path: image3_3, duration: 150 },
+                { type: 'text',  stageIndex: 5, duration: 100 },
+            ];
+            
+            // Scene setup
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 5;
+            
+            const renderer = new THREE.WebGLRenderer({
+                canvas: document.querySelector('#three-canvas'),
+                antialias: true,
+                alpha: true
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            
+            // DOM Elements
+            const scrollContainer = document.querySelector('.scroll-container') as HTMLElement;
+            const textSections = document.querySelectorAll('.text-section');
+            
+            // Set Scroll Container Height
+            const totalDuration = STAGES.reduce((acc, stage) => acc + stage.duration, 0);
+            if (scrollContainer) {
+                scrollContainer.style.height = `${totalDuration}vh`;
+            }
+            
+            // Three.js Objects and Texture Loading
+            let paperMesh: any;
+            const textures: any = {}; // Cache for loaded textures
+            
+            // Preload all textures
+            let loadedTextures = 0;
+            const imageStages = STAGES.filter((s: any) => s.type === 'image');
+            
+            // Create texture loader
+            textureLoader = new THREE.TextureLoader();
+            
+            imageStages.forEach((stage: any) => {
+                textureLoader.load(stage.path, (texture: any) => {
+                    textures[stage.path] = texture;
+                    loadedTextures++;
+                    if (loadedTextures === imageStages.length) {
+                        initPaperMesh(); // Initialize with the first texture
+                        animate();
+                    }
+                });
+            });
+            
+            // GLSL (Shaders)
+            const simplexNoise = `
+                vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+                float snoise(vec2 v){ const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439); vec2 i  = floor(v + dot(v, C.yy) ); vec2 x0 = v -   i + dot(i, C.xx); vec2 i1; i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0); vec4 x12 = x0.xyxy + C.xxzz; x12.xy -= i1.xy; x12.zw -= 1.0 - i1.xy; i = mod(i, 289.0); vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 )) + i.x + vec3(0.0, i1.x, 1.0 )); vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0); m = m*m; m = m*m; vec3 x = 2.0 * fract(p * C.www) - 1.0; vec3 h = abs(x) - 0.5; vec3 ox = floor(x + 0.5); vec3 a0 = x - ox; m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h ); vec3 g; g.x  = a0.x  * x0.x  + h.x  * x0.y; g.yz = a0.yz * x12.xz + h.yz * x12.yw; return 130.0 * dot(m, g); }
+            `;
+            
+            function initPaperMesh() {
+                const firstStage = STAGES[0];
+                const firstTexture = firstStage.path ? textures[firstStage.path] : null;
+                
+                if (!firstTexture || !firstTexture.image) return;
+                
+                const aspectRatio = firstTexture.image.width / firstTexture.image.height;
+                const planeWidth = 4;
+                const planeHeight = planeWidth / aspectRatio;
+                
+                const paperGeometry = new THREE.PlaneGeometry(planeWidth, planeHeight, 64, 64);
+                const paperMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        u_time: { value: 0.0 },
+                        u_progress: { value: 0.0 },
+                        u_texture: { value: firstTexture }
+                    },
+                    vertexShader: `
+                        uniform float u_time;
+                        uniform float u_progress;
+                        varying vec2 vUv;
+                        void main() {
+                            vUv = uv;
+                            vec3 pos = position;
+                            // Reverse the float animation: it starts collapsed and floats as it appears
+                            float floatIntensity = 0.06 * u_progress;
+                            pos.x += sin(u_time * 0.5 + pos.y * 3.0) * floatIntensity;
+                            pos.y += cos(u_time * 0.7 + pos.x * 2.0) * floatIntensity;
+                            pos.z += sin(u_time * 1.2 + pos.y * 4.0) * floatIntensity;
+                            // The main animation is now reversed: from center to original position
+                            float easedProgress = smoothstep(0.0, 1.0, 1.0 - u_progress);
+                            pos = mix(pos, vec3(0.0), easedProgress);
+                            pos.z -= easedProgress * 2.0;
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        ${simplexNoise}
+                        uniform float u_time;
+                        uniform float u_progress;
+                        
+                        // ================== FIX WAS HERE ==================
+                        uniform sampler2D u_texture; // Corrected from samplerD to sampler2D
+                        // ================================================
+                        
+                        varying vec2 vUv;
+                        float fbm(vec2 st) {
+                            float value = 0.0; float amplitude = 0.5;
+                            for (int i = 0; i < 4; i++) {
+                                value += amplitude * snoise(st); st *= 2.0; amplitude *= 0.5;
+                            }
+                            return value;
+                        }
+                        void main() {
+                            vec4 textureColor = texture2D(u_texture, vUv);
+                            float noiseVal = fbm(vUv * 2.5);
+                            noiseVal = (noiseVal + 1.0) * 0.5;
+                            // Reversed the burn effect
+                            float burnThreshold = 1.0 - u_progress;
+                            if (noiseVal < burnThreshold) { discard; }
+                            float burnEdge = smoothstep(burnThreshold - 0.1, burnThreshold, noiseVal);
+                            textureColor.a *= burnEdge;
+                            if (textureColor.a < 0.1) { discard; }
+                            gl_FragColor = textureColor;
+                        }
+                    `,
+                    side: THREE.DoubleSide,
+                    transparent: true
+                });
+                
+                paperMesh = new THREE.Mesh(paperGeometry, paperMaterial);
+                scene.add(paperMesh);
+            }
+            
+            // Scroll event listener (core logic)
+            let currentStageIndex = 0;
+            let lastStageIndex = -1;
+            
+            const handleScroll = () => {
+                const scrollY = window.scrollY;
+                const vh = window.innerHeight;
+                let accumulatedHeight = 0;
+                
+                for (let i = 0; i < STAGES.length; i++) {
+                    const stage = STAGES[i];
+                    const stageHeight = stage.duration * vh / 100;
+                    
+                    if (scrollY < accumulatedHeight + stageHeight) {
+                        currentStageIndex = i;
+                        const stageScrollY = scrollY - accumulatedHeight;
+                        const stageProgress = stageScrollY / stageHeight;
+                        
+                        updateScene(currentStageIndex, stageProgress);
+                        break;
+                    }
+                    accumulatedHeight += stageHeight;
+                }
+            };
+            
+            window.addEventListener('scroll', handleScroll);
+            
+            function updateScene(stageIndex: number, stageProgress: number) {
+                const stage = STAGES[stageIndex];
+                
+                textSections.forEach(section => {
+                    const sectionStageIndex = parseInt((section as HTMLElement).dataset.stage || '0');
+                    if (stage.type === 'text' && sectionStageIndex === stage.stageIndex) {
+                        section.classList.add('is-visible');
+                    } else {
+                        section.classList.remove('is-visible');
+                    }
+                });
+                
+                if (!paperMesh) return;
+                
+                if (stage.type === 'image') {
+                    if (lastStageIndex !== stageIndex && stage.path) {
+                        const texture = textures[stage.path];
+                        if (texture) {
+                            paperMesh.material.uniforms.u_texture.value = texture;
+                            lastStageIndex = stageIndex;
+                        }
+                    }
+                    
+                    const start = 0.2;
+                    const end = 0.8;
+                    
+                    let shaderProgress = (stageProgress - start) / (end - start);
+                    shaderProgress = Math.max(0, Math.min(1, shaderProgress));
+                    
+                    paperMesh.visible = true;
+                    paperMesh.material.uniforms.u_progress.value = shaderProgress;
+                } else {
+                    paperMesh.visible = false;
+                }
+            }
+            
+            // Animation loop
+            const clock = new THREE.Clock();
+            function animate() {
+                if (!paperMesh) {
+                    requestAnimationFrame(animate);
+                    return;
+                }
+                const elapsedTime = clock.getElapsedTime();
+                paperMesh.material.uniforms.u_time.value = elapsedTime;
+                paperMesh.rotation.z = Math.sin(elapsedTime * 0.1) * 0.05;
+                renderer.render(scene, camera);
+                requestAnimationFrame(animate);
+            }
+            
+            // Window resize handler
+            const handleResize = () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            };
+            
+            window.addEventListener('resize', handleResize);
+            
+            // Cleanup function
+            return () => {
+                window.removeEventListener('scroll', handleScroll);
+                window.removeEventListener('resize', handleResize);
+            };
+        };
+        
+        // Initialize Three.js when component mounts
+        initThreeJs();
+        
+        // Cleanup function for useEffect
+        return () => {
+            // Any necessary cleanup can be done here
+        };
+    }, []);
+
+
+
     // regarding部分图片左右移动效果
     const handleLiteratureMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         const container = e.currentTarget;
@@ -383,7 +643,7 @@ const App: React.FC = () => {
         <>
             {/* 三个角落固定悬浮元素 */}
             <div className="fixed-overlay top-right">千丈阴崖百丈溪 孤桐枝上凤偏宜</div>
-            <div className="fixed-overlay bottom-left">TO LEARN AND CREATE,<br />FOR A MEANINGFUL LIFE AND A BETTER WORLD</div>
+            <div className="fixed-overlay bottom-left">TO LEARN AND CREATE,<br/>FOR A MEANINGFUL LIFE AND A BETTER WORLD</div>
             <div className="fixed-overlay bottom-right">chivalrycieux@qq.com 2025</div>
 
             <div className="reveal-container">
@@ -410,7 +670,7 @@ const App: React.FC = () => {
                     <div className="reveal-layer top-layer">
                         <div className="first-page-layout">
                             <div className="first-page-text">
-                                <h1>兹暂客</h1>
+                                <h1>兹暂客：徐梦瑜，别看了</h1>
                             </div>
                             <div className="first-page-image">
                                 <img src={artworkImage} alt="Artwork" />

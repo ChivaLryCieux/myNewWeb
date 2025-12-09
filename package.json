@@ -11,9 +11,12 @@
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@next/env": "^15.5.4",
+    "@types/node": "^24.6.1",
     "gsap": "^3.13.0",
     "leaflet": "^1.9.4",
     "motion": "^12.23.16",
+    "next": "^15.5.4",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "three": "^0.179.1"
