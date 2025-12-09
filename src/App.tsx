@@ -692,7 +692,7 @@ const App: React.FC = () => {
                 <div className="avatar-container">
                     <img src={avatarImage} alt="Avatar" className="avatar-image" />
                 </div>
-                <p>“大学之道，在明明德，在亲民，在止于至善。”在我还年幼的时候，我就已经将《大学》的三纲领背得滚瓜烂熟了。我初中的校训摘自论语，叫“君子不器”。孔子以此来说明君子不能像器物一样只有一种功用。我时常以此来告诉自己，人生一世，探求世间的无数真理，格物致知，同时品味不同的人生滋味，修身明德，乃是一种多姿多彩的生活方式，而这样怀揣不同知识与技艺的道德高尚的“君子”也正是一种理想的人格。</p>
+                <p>不能像器物一样只有一种功用。我在这里。</p>
             </div>
 
             <div className="marquee-container">
