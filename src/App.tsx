@@ -10,7 +10,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import MapComponent from './components/MapComponent';
 
 import artworkImage from './assets/images/1-1.png';
-import avatarImage from './assets/images/avatar.png'; 
+import avatarImage from './assets/images/avatar.png';
 import image2_1 from './assets/images/2-1.jpg';
 import image2_2 from './assets/images/2-2.jpg';
 import image2_3 from './assets/images/2-3.jpg';
@@ -18,22 +18,57 @@ import image3_1 from './assets/images/3-1.png';
 import image3_2 from './assets/images/3-2.png';
 import image3_3 from './assets/images/3-3.png';
 
+// --- 类型定义 ---
+
+// 扩展 Mesh 类型以包含自定义属性 isTwitching
+interface TwitchingMesh extends THREE.Mesh {
+    isTwitching?: boolean;
+}
+
+// 滚动阶段配置接口
+interface ScrollStage {
+    type: 'image' | 'text';
+    path?: string; // image 类型需要
+    stageIndex?: number; // text 类型需要
+    duration: number;
+}
+
+// 魔方应用对象接口
+interface RubiksCubeAppInterface {
+    scene: THREE.Scene | null;
+    camera: THREE.PerspectiveCamera | null;
+    renderer: THREE.WebGLRenderer | null;
+    controls: OrbitControls | null;
+    composer: EffectComposer | null;
+    rubiksCube: THREE.Group | null;
+    cubeletOriginalPositions: THREE.Vector3[];
+    animationFrameId: number | null;
+    container: HTMLElement | null;
+    boundOnWindowResize: (() => void) | null;
+    init: (containerElement: HTMLElement) => void;
+    createRubiksCube: () => void;
+    onWindowResize: () => void;
+    animate: () => void;
+    start: () => void;
+    stop: () => void;
+}
+
+// --- 组件定义 ---
+
 // 魔方页面悬浮文字组件
 const FloatingText: React.FC<{
     targetSectionId: string;
-    lines: string[]; // 传入的文字行数组
+    lines: string[];
 }> = ({ targetSectionId, lines }) => {
     const floatingRef = useRef<HTMLDivElement>(null);
     const targetRef = useRef<HTMLDivElement>(null);
     const [scrollY, setScrollY] = useState(0);
 
-    // 初始化目标元素引用
     useEffect(() => {
         targetRef.current = document.getElementById(targetSectionId) as HTMLDivElement;
         handlePositionUpdate();
     }, [targetSectionId]);
 
-    // 监听滚动事件
     useEffect(() => {
         const handleScroll = () => {
             requestAnimationFrame(() => setScrollY(window.scrollY));
@@ -42,7 +77,6 @@ const FloatingText: React.FC<{
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // 处理位置更新
     const handlePositionUpdate = () => {
         const floatingEl = floatingRef.current;
         const targetEl = targetRef.current;
@@ -51,7 +85,7 @@ const FloatingText: React.FC<{
         const targetRect = targetEl.getBoundingClientRect();
         const targetTop = targetRect.top + window.scrollY;
         const targetBottom = targetTop + targetRect.height;
-        const floatingHeight = floatingEl.offsetHeight || lines.length * 30; // 动态计算高度
+        const floatingHeight = floatingEl.offsetHeight || lines.length * 30;
         const stopOffset = targetRect.height - floatingHeight - 20;
         const currentScroll = scrollY;
         const scrollInTarget = currentScroll - targetTop;
@@ -81,10 +115,9 @@ const FloatingText: React.FC<{
         }
     };
 
-    // 滚动和窗口大小变化时更新位置
     useEffect(() => {
         handlePositionUpdate();
-    }, [scrollY, lines]); // 当文字内容变化时重新计算
+    }, [scrollY, lines]);
 
     useEffect(() => {
         const handleResize = () => handlePositionUpdate();
@@ -98,29 +131,25 @@ const FloatingText: React.FC<{
             style={{
                 pointerEvents: 'none',
                 zIndex: 100,
-                lineHeight: 1.6, // 行高
+                lineHeight: 1.6,
             }}
         >
             {lines.map((line, index) => (
-                // 用React.Fragment包裹每行和换行符（最后一行不需要换行）
                 <React.Fragment key={index}>
-          <span
-              style={{
-                  color: 'white',
-                  fontWeight: 200,
-                  // 奇数行（index从0开始，所以用index % 2 === 0判断）使用字体A
-                  // 偶数行使用字体B
-                  fontFamily: index % 2 === 0
-                      ? 'ke, sans-serif'  // 奇数行字体
-                      : 'serif, helvetica',  // 偶数行字体
-                  fontSize: index % 2 === 0
-                      ? '2rem'  // 奇数行字大小
-                      : '1.5rem',  // 偶数行字大小
-              }}
-          >
-            {line}
-          </span>
-                    {/* 最后一行不添加换行 */}
+                    <span
+                        style={{
+                            color: 'white',
+                            fontWeight: 200,
+                            fontFamily: index % 2 === 0
+                                ? 'ke, sans-serif'
+                                : 'serif, helvetica',
+                            fontSize: index % 2 === 0
+                                ? '2rem'
+                                : '1.5rem',
+                        }}
+                    >
+                        {line}
+                    </span>
                     {index !== lines.length - 1 && <br />}
                 </React.Fragment>
             ))}
@@ -130,11 +159,13 @@ const FloatingText: React.FC<{
 
 const App: React.FC = () => {
     const rubiksCubeRef = useRef<HTMLDivElement>(null);
-    const rubiksCubeAppRef = useRef<any>(null);
+    // 使用定义的 Interface 替换 any
+    const rubiksCubeAppRef = useRef<RubiksCubeAppInterface | null>(null);
     const [literatureShifted, setLiteratureShifted] = useState(false);
     const [designShifted, setDesignShifted] = useState(false);
     const [aiShifted, setAiShifted] = useState(false);
 
+    // Rubik's Cube Effect
     useEffect(() => {
         gsap.registerPlugin(ScrollTrigger);
 
@@ -149,17 +180,18 @@ const App: React.FC = () => {
             },
         });
 
-        const RubiksCubeApp = {
-            scene: null as THREE.Scene | null,
-            camera: null as THREE.PerspectiveCamera | null,
-            renderer: null as THREE.WebGLRenderer | null,
-            controls: null as OrbitControls | null,
-            composer: null as EffectComposer | null,
-            rubiksCube: null as THREE.Group | null,
-            cubeletOriginalPositions: [] as THREE.Vector3[],
-            animationFrameId: null as number | null,
-            container: null as HTMLElement | null,
-            boundOnWindowResize: null as (() => void) | null,
+        // 明确定义对象的类型
+        const RubiksCubeApp: RubiksCubeAppInterface = {
+            scene: null,
+            camera: null,
+            renderer: null,
+            controls: null,
+            composer: null,
+            rubiksCube: null,
+            cubeletOriginalPositions: [],
+            animationFrameId: null,
+            container: null,
+            boundOnWindowResize: null,
 
             init: function(containerElement: HTMLElement) {
                 this.container = containerElement;
@@ -187,6 +219,7 @@ const App: React.FC = () => {
 
                 this.createRubiksCube();
 
+                // 断言 scene 和 camera 不为空，因为前面已经初始化了
                 const renderScene = new RenderPass(this.scene!, this.camera!);
                 const bloomPass = new UnrealBloomPass(new THREE.Vector2(this.container.clientWidth, this.container.clientHeight), 1.5, 0.4, 0.85);
                 bloomPass.threshold = 0;
@@ -211,7 +244,8 @@ const App: React.FC = () => {
                 for (let x = 0; x < N; x++) {
                     for (let y = 0; y < N; y++) {
                         for (let z = 0; z < N; z++) {
-                            const cube = new THREE.Mesh(geometry, cubeMaterial.clone());
+                            // 使用自定义接口 TwitchingMesh 替代 any
+                            const cube = new THREE.Mesh(geometry, cubeMaterial.clone()) as TwitchingMesh;
                             const position = new THREE.Vector3(
                                 (x - (N - 1) / 2) * (cubeSize + spacing),
                                 (y - (N - 1) / 2) * (cubeSize + spacing),
@@ -221,7 +255,7 @@ const App: React.FC = () => {
 
                             const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geometry), edgeMaterial);
                             cube.add(edges);
-                            (cube as any).isTwitching = false;
+                            cube.isTwitching = false;
                             this.rubiksCube.add(cube);
                             this.cubeletOriginalPositions.push(position.clone());
                         }
@@ -245,7 +279,8 @@ const App: React.FC = () => {
                 this.rubiksCube.rotation.y += 0.002;
 
                 const breathAmplitude = 0.05, breathSpeed = 2;
-                this.rubiksCube.children.forEach((cubelet, i) => {
+                this.rubiksCube.children.forEach((child, i) => {
+                    const cubelet = child as THREE.Mesh; // 类型断言
                     const originalPos = this.cubeletOriginalPositions[i];
                     if (!originalPos) return;
                     const direction = originalPos.clone().normalize();
@@ -254,7 +289,8 @@ const App: React.FC = () => {
                 });
 
                 if (Math.random() > 0.965) {
-                    const randomCubelet = this.rubiksCube.children[Math.floor(Math.random() * this.rubiksCube.children.length)] as THREE.Mesh & { isTwitching?: boolean };
+                    // 类型安全地获取子元素
+                    const randomCubelet = this.rubiksCube.children[Math.floor(Math.random() * this.rubiksCube.children.length)] as TwitchingMesh;
                     if (randomCubelet && !randomCubelet.isTwitching) {
                         randomCubelet.isTwitching = true;
                         gsap.to(randomCubelet.rotation, {
@@ -325,256 +361,242 @@ const App: React.FC = () => {
 
     // 3D Scroll Effect useEffect
     useEffect(() => {
-        // Dynamically import Three.js modules
-        let THREE: any;
-        let textureLoader: any;
-        
-        const initThreeJs = async () => {
-            // Dynamically import Three.js
-            const threeModule = await import('three');
-            THREE = threeModule;
-            
-            // Initialize the 3D scroll effect
-            initScrollEffect();
-        };
-        
-        const initScrollEffect = () => {
-            if (!THREE) return;
-            
-            // Configuration
-            const STAGES = [
-                { type: 'image', path: image3_1, duration: 150 },
-                { type: 'text',  stageIndex: 1, duration: 100 },
-                { type: 'image', path: image3_2, duration: 150 },
-                { type: 'text',  stageIndex: 3, duration: 100 },
-                { type: 'image', path: image3_3, duration: 150 },
-                { type: 'text',  stageIndex: 5, duration: 100 },
-            ];
-            
-            // Scene setup
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.z = 5;
-            
-            const renderer = new THREE.WebGLRenderer({
-                canvas: document.querySelector('#three-canvas'),
-                antialias: true,
-                alpha: true
-            });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            
-            // DOM Elements
-            const scrollContainer = document.querySelector('.scroll-container') as HTMLElement;
-            const textSections = document.querySelectorAll('.text-section');
-            
-            // Set Scroll Container Height
-            const totalDuration = STAGES.reduce((acc, stage) => acc + stage.duration, 0);
-            if (scrollContainer) {
-                scrollContainer.style.height = `${totalDuration}vh`;
-            }
-            
-            // Three.js Objects and Texture Loading
-            let paperMesh: any;
-            const textures: any = {}; // Cache for loaded textures
-            
-            // Preload all textures
-            let loadedTextures = 0;
-            const imageStages = STAGES.filter((s: any) => s.type === 'image');
-            
-            // Create texture loader
-            textureLoader = new THREE.TextureLoader();
-            
-            imageStages.forEach((stage: any) => {
-                textureLoader.load(stage.path, (texture: any) => {
-                    textures[stage.path] = texture;
-                    loadedTextures++;
-                    if (loadedTextures === imageStages.length) {
-                        initPaperMesh(); // Initialize with the first texture
-                        animate();
-                    }
-                });
-            });
-            
-            // GLSL (Shaders)
-            const simplexNoise = `
-                vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
-                float snoise(vec2 v){ const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439); vec2 i  = floor(v + dot(v, C.yy) ); vec2 x0 = v -   i + dot(i, C.xx); vec2 i1; i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0); vec4 x12 = x0.xyxy + C.xxzz; x12.xy -= i1.xy; x12.zw -= 1.0 - i1.xy; i = mod(i, 289.0); vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 )) + i.x + vec3(0.0, i1.x, 1.0 )); vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0); m = m*m; m = m*m; vec3 x = 2.0 * fract(p * C.www) - 1.0; vec3 h = abs(x) - 0.5; vec3 ox = floor(x + 0.5); vec3 a0 = x - ox; m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h ); vec3 g; g.x  = a0.x  * x0.x  + h.x  * x0.y; g.yz = a0.yz * x12.xz + h.yz * x12.yw; return 130.0 * dot(m, g); }
-            `;
-            
-            function initPaperMesh() {
-                const firstStage = STAGES[0];
-                const firstTexture = firstStage.path ? textures[firstStage.path] : null;
-                
-                if (!firstTexture || !firstTexture.image) return;
-                
-                const aspectRatio = firstTexture.image.width / firstTexture.image.height;
-                const planeWidth = 4;
-                const planeHeight = planeWidth / aspectRatio;
-                
-                const paperGeometry = new THREE.PlaneGeometry(planeWidth, planeHeight, 64, 64);
-                const paperMaterial = new THREE.ShaderMaterial({
-                    uniforms: {
-                        u_time: { value: 0.0 },
-                        u_progress: { value: 0.0 },
-                        u_texture: { value: firstTexture }
-                    },
-                    vertexShader: `
-                        uniform float u_time;
-                        uniform float u_progress;
-                        varying vec2 vUv;
-                        void main() {
-                            vUv = uv;
-                            vec3 pos = position;
-                            // Reverse the float animation: it starts collapsed and floats as it appears
-                            float floatIntensity = 0.06 * u_progress;
-                            pos.x += sin(u_time * 0.5 + pos.y * 3.0) * floatIntensity;
-                            pos.y += cos(u_time * 0.7 + pos.x * 2.0) * floatIntensity;
-                            pos.z += sin(u_time * 1.2 + pos.y * 4.0) * floatIntensity;
-                            // The main animation is now reversed: from center to original position
-                            float easedProgress = smoothstep(0.0, 1.0, 1.0 - u_progress);
-                            pos = mix(pos, vec3(0.0), easedProgress);
-                            pos.z -= easedProgress * 2.0;
-                            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-                        }
-                    `,
-                    fragmentShader: `
-                        ${simplexNoise}
-                        uniform float u_time;
-                        uniform float u_progress;
-                        
-                        // ================== FIX WAS HERE ==================
-                        uniform sampler2D u_texture; // Corrected from samplerD to sampler2D
-                        // ================================================
-                        
-                        varying vec2 vUv;
-                        float fbm(vec2 st) {
-                            float value = 0.0; float amplitude = 0.5;
-                            for (int i = 0; i < 4; i++) {
-                                value += amplitude * snoise(st); st *= 2.0; amplitude *= 0.5;
-                            }
-                            return value;
-                        }
-                        void main() {
-                            vec4 textureColor = texture2D(u_texture, vUv);
-                            float noiseVal = fbm(vUv * 2.5);
-                            noiseVal = (noiseVal + 1.0) * 0.5;
-                            // Reversed the burn effect
-                            float burnThreshold = 1.0 - u_progress;
-                            if (noiseVal < burnThreshold) { discard; }
-                            float burnEdge = smoothstep(burnThreshold - 0.1, burnThreshold, noiseVal);
-                            textureColor.a *= burnEdge;
-                            if (textureColor.a < 0.1) { discard; }
-                            gl_FragColor = textureColor;
-                        }
-                    `,
-                    side: THREE.DoubleSide,
-                    transparent: true
-                });
-                
-                paperMesh = new THREE.Mesh(paperGeometry, paperMaterial);
-                scene.add(paperMesh);
-            }
-            
-            // Scroll event listener (core logic)
-            let currentStageIndex = 0;
-            let lastStageIndex = -1;
-            
-            const handleScroll = () => {
-                const scrollY = window.scrollY;
-                const vh = window.innerHeight;
-                let accumulatedHeight = 0;
-                
-                for (let i = 0; i < STAGES.length; i++) {
-                    const stage = STAGES[i];
-                    const stageHeight = stage.duration * vh / 100;
-                    
-                    if (scrollY < accumulatedHeight + stageHeight) {
-                        currentStageIndex = i;
-                        const stageScrollY = scrollY - accumulatedHeight;
-                        const stageProgress = stageScrollY / stageHeight;
-                        
-                        updateScene(currentStageIndex, stageProgress);
-                        break;
-                    }
-                    accumulatedHeight += stageHeight;
+        // 移除了重复的动态 import，直接使用顶部的 import * as THREE
+        // 定义 Stage 类型
+        const STAGES: ScrollStage[] = [
+            { type: 'image', path: image3_1, duration: 150 },
+            { type: 'text',  stageIndex: 1, duration: 100 },
+            { type: 'image', path: image3_2, duration: 150 },
+            { type: 'text',  stageIndex: 3, duration: 100 },
+            { type: 'image', path: image3_3, duration: 150 },
+            { type: 'text',  stageIndex: 5, duration: 100 },
+        ];
+
+        // Scene setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        const canvasElement = document.querySelector('#three-canvas');
+        if (!canvasElement) return; // 安全检查
+
+        const renderer = new THREE.WebGLRenderer({
+            canvas: canvasElement,
+            antialias: true,
+            alpha: true
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+        // DOM Elements
+        const scrollContainer = document.querySelector('.scroll-container') as HTMLElement;
+        const textSections = document.querySelectorAll('.text-section');
+
+        // Set Scroll Container Height
+        const totalDuration = STAGES.reduce((acc, stage) => acc + stage.duration, 0);
+        if (scrollContainer) {
+            scrollContainer.style.height = `${totalDuration}vh`;
+        }
+
+        // Three.js Objects and Texture Loading
+        // 替换 any 为具体类型
+        let paperMesh: THREE.Mesh | undefined;
+        const textures: Record<string, THREE.Texture> = {}; // 缓存加载的纹理
+
+        // Preload all textures
+        let loadedTextures = 0;
+        const imageStages = STAGES.filter((s) => s.type === 'image' && s.path);
+
+        // Create texture loader
+        const textureLoader = new THREE.TextureLoader();
+
+        imageStages.forEach((stage) => {
+            if (!stage.path) return;
+            textureLoader.load(stage.path, (texture: THREE.Texture) => {
+                if (!stage.path) return; // 再次检查以满足类型安全
+                textures[stage.path] = texture;
+                loadedTextures++;
+                if (loadedTextures === imageStages.length) {
+                    initPaperMesh(); // Initialize with the first texture
+                    animate();
                 }
-            };
-            
-            window.addEventListener('scroll', handleScroll);
-            
-            function updateScene(stageIndex: number, stageProgress: number) {
-                const stage = STAGES[stageIndex];
-                
-                textSections.forEach(section => {
-                    const sectionStageIndex = parseInt((section as HTMLElement).dataset.stage || '0');
-                    if (stage.type === 'text' && sectionStageIndex === stage.stageIndex) {
-                        section.classList.add('is-visible');
-                    } else {
-                        section.classList.remove('is-visible');
+            });
+        });
+
+        // GLSL (Shaders)
+        const simplexNoise = `
+            vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+            float snoise(vec2 v){ const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439); vec2 i  = floor(v + dot(v, C.yy) ); vec2 x0 = v -   i + dot(i, C.xx); vec2 i1; i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0); vec4 x12 = x0.xyxy + C.xxzz; x12.xy -= i1.xy; x12.zw -= 1.0 - i1.xy; i = mod(i, 289.0); vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 )) + i.x + vec3(0.0, i1.x, 1.0 )); vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0); m = m*m; m = m*m; vec3 x = 2.0 * fract(p * C.www) - 1.0; vec3 h = abs(x) - 0.5; vec3 ox = floor(x + 0.5); vec3 a0 = x - ox; m *= 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h ); vec3 g; g.x  = a0.x  * x0.x  + h.x  * x0.y; g.yz = a0.yz * x12.xz + h.yz * x12.yw; return 130.0 * dot(m, g); }
+        `;
+
+        function initPaperMesh() {
+            const firstStage = STAGES[0];
+            const firstTexture = firstStage.path ? textures[firstStage.path] : null;
+
+            if (!firstTexture || !firstTexture.image) return;
+
+            const aspectRatio = firstTexture.image.width / firstTexture.image.height;
+            const planeWidth = 4;
+            const planeHeight = planeWidth / aspectRatio;
+
+            const paperGeometry = new THREE.PlaneGeometry(planeWidth, planeHeight, 64, 64);
+            const paperMaterial = new THREE.ShaderMaterial({
+                uniforms: {
+                    u_time: { value: 0.0 },
+                    u_progress: { value: 0.0 },
+                    u_texture: { value: firstTexture }
+                },
+                vertexShader: `
+                    uniform float u_time;
+                    uniform float u_progress;
+                    varying vec2 vUv;
+                    void main() {
+                        vUv = uv;
+                        vec3 pos = position;
+                        // Reverse the float animation: it starts collapsed and floats as it appears
+                        float floatIntensity = 0.06 * u_progress;
+                        pos.x += sin(u_time * 0.5 + pos.y * 3.0) * floatIntensity;
+                        pos.y += cos(u_time * 0.7 + pos.x * 2.0) * floatIntensity;
+                        pos.z += sin(u_time * 1.2 + pos.y * 4.0) * floatIntensity;
+                        // The main animation is now reversed: from center to original position
+                        float easedProgress = smoothstep(0.0, 1.0, 1.0 - u_progress);
+                        pos = mix(pos, vec3(0.0), easedProgress);
+                        pos.z -= easedProgress * 2.0;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
                     }
-                });
-                
-                if (!paperMesh) return;
-                
-                if (stage.type === 'image') {
-                    if (lastStageIndex !== stageIndex && stage.path) {
-                        const texture = textures[stage.path];
-                        if (texture) {
-                            paperMesh.material.uniforms.u_texture.value = texture;
-                            lastStageIndex = stageIndex;
+                `,
+                fragmentShader: `
+                    ${simplexNoise}
+                    uniform float u_time;
+                    uniform float u_progress;
+                    
+                    // ================== FIX WAS HERE ==================
+                    uniform sampler2D u_texture; // Corrected from samplerD to sampler2D
+                    // ================================================
+                    
+                    varying vec2 vUv;
+                    float fbm(vec2 st) {
+                        float value = 0.0; float amplitude = 0.5;
+                        for (int i = 0; i < 4; i++) {
+                            value += amplitude * snoise(st); st *= 2.0; amplitude *= 0.5;
                         }
+                        return value;
                     }
-                    
-                    const start = 0.2;
-                    const end = 0.8;
-                    
-                    let shaderProgress = (stageProgress - start) / (end - start);
-                    shaderProgress = Math.max(0, Math.min(1, shaderProgress));
-                    
-                    paperMesh.visible = true;
-                    paperMesh.material.uniforms.u_progress.value = shaderProgress;
+                    void main() {
+                        vec4 textureColor = texture2D(u_texture, vUv);
+                        float noiseVal = fbm(vUv * 2.5);
+                        noiseVal = (noiseVal + 1.0) * 0.5;
+                        // Reversed the burn effect
+                        float burnThreshold = 1.0 - u_progress;
+                        if (noiseVal < burnThreshold) { discard; }
+                        float burnEdge = smoothstep(burnThreshold - 0.1, burnThreshold, noiseVal);
+                        textureColor.a *= burnEdge;
+                        if (textureColor.a < 0.1) { discard; }
+                        gl_FragColor = textureColor;
+                    }
+                `,
+                side: THREE.DoubleSide,
+                transparent: true
+            });
+
+            paperMesh = new THREE.Mesh(paperGeometry, paperMaterial);
+            scene.add(paperMesh);
+        }
+
+        // Scroll event listener (core logic)
+        let currentStageIndex = 0;
+        let lastStageIndex = -1;
+
+        const handleScroll = () => {
+            const scrollY = window.scrollY;
+            const vh = window.innerHeight;
+            let accumulatedHeight = 0;
+
+            for (let i = 0; i < STAGES.length; i++) {
+                const stage = STAGES[i];
+                const stageHeight = stage.duration * vh / 100;
+
+                if (scrollY < accumulatedHeight + stageHeight) {
+                    currentStageIndex = i;
+                    const stageScrollY = scrollY - accumulatedHeight;
+                    const stageProgress = stageScrollY / stageHeight;
+
+                    updateScene(currentStageIndex, stageProgress);
+                    break;
+                }
+                accumulatedHeight += stageHeight;
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+
+        function updateScene(stageIndex: number, stageProgress: number) {
+            const stage = STAGES[stageIndex];
+
+            textSections.forEach(section => {
+                const sectionStageIndex = parseInt((section as HTMLElement).dataset.stage || '0');
+                if (stage.type === 'text' && sectionStageIndex === stage.stageIndex) {
+                    section.classList.add('is-visible');
                 } else {
-                    paperMesh.visible = false;
+                    section.classList.remove('is-visible');
                 }
+            });
+
+            if (!paperMesh) return;
+            // 类型断言 paperMesh.material 为 ShaderMaterial，以便访问 uniforms
+            const material = paperMesh.material as THREE.ShaderMaterial;
+
+            if (stage.type === 'image') {
+                if (lastStageIndex !== stageIndex && stage.path) {
+                    const texture = textures[stage.path];
+                    if (texture) {
+                        material.uniforms.u_texture.value = texture;
+                        lastStageIndex = stageIndex;
+                    }
+                }
+
+                const start = 0.2;
+                const end = 0.8;
+
+                let shaderProgress = (stageProgress - start) / (end - start);
+                shaderProgress = Math.max(0, Math.min(1, shaderProgress));
+
+                paperMesh.visible = true;
+                material.uniforms.u_progress.value = shaderProgress;
+            } else {
+                paperMesh.visible = false;
             }
-            
-            // Animation loop
-            const clock = new THREE.Clock();
-            function animate() {
-                if (!paperMesh) {
-                    requestAnimationFrame(animate);
-                    return;
-                }
-                const elapsedTime = clock.getElapsedTime();
-                paperMesh.material.uniforms.u_time.value = elapsedTime;
-                paperMesh.rotation.z = Math.sin(elapsedTime * 0.1) * 0.05;
-                renderer.render(scene, camera);
+        }
+
+        // Animation loop
+        const clock = new THREE.Clock();
+        function animate() {
+            if (!paperMesh) {
                 requestAnimationFrame(animate);
+                return;
             }
-            
-            // Window resize handler
-            const handleResize = () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            };
-            
-            window.addEventListener('resize', handleResize);
-            
-            // Cleanup function
-            return () => {
-                window.removeEventListener('scroll', handleScroll);
-                window.removeEventListener('resize', handleResize);
-            };
+            const elapsedTime = clock.getElapsedTime();
+            const material = paperMesh.material as THREE.ShaderMaterial;
+            material.uniforms.u_time.value = elapsedTime;
+            paperMesh.rotation.z = Math.sin(elapsedTime * 0.1) * 0.05;
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+
+        // Window resize handler
+        const handleResize = () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
         };
-        
-        // Initialize Three.js when component mounts
-        initThreeJs();
-        
-        // Cleanup function for useEffect
+
+        window.addEventListener('resize', handleResize);
+
+        // Cleanup function
         return () => {
-            // Any necessary cleanup can be done here
+            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('resize', handleResize);
+            // 这里可以添加清理 renderer 和 scene 的逻辑
         };
     }, []);
 
@@ -586,7 +608,7 @@ const App: React.FC = () => {
         const containerRect = container.getBoundingClientRect();
         const mouseX = e.clientX - containerRect.left;
         const containerWidth = containerRect.width;
-        
+
         // 如果鼠标在左半部分
         if (mouseX < containerWidth / 2) {
             if (literatureShifted) {
@@ -605,7 +627,7 @@ const App: React.FC = () => {
         const containerRect = container.getBoundingClientRect();
         const mouseX = e.clientX - containerRect.left;
         const containerWidth = containerRect.width;
-        
+
         // 对于reverse布局，逻辑应该相反
         // 如果鼠标在左半部分，应该显示中文（图片左移）
         if (mouseX < containerWidth / 2) {
@@ -625,7 +647,7 @@ const App: React.FC = () => {
         const containerRect = container.getBoundingClientRect();
         const mouseX = e.clientX - containerRect.left;
         const containerWidth = containerRect.width;
-        
+
         // 如果鼠标在左半部分
         if (mouseX < containerWidth / 2) {
             if (aiShifted) {
