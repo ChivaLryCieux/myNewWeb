@@ -8,6 +8,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import MapComponent from './components/MapComponent';
+import CircularText from './components/CircularText/CircularText';
 
 import artworkImage from './assets/images/1-1.png';
 import avatarImage from './assets/images/avatar.png';
@@ -193,7 +194,7 @@ const App: React.FC = () => {
             container: null,
             boundOnWindowResize: null,
 
-            init: function(containerElement: HTMLElement) {
+            init: function (containerElement: HTMLElement) {
                 this.container = containerElement;
                 this.scene = new THREE.Scene();
 
@@ -234,7 +235,7 @@ const App: React.FC = () => {
                 window.addEventListener('resize', this.boundOnWindowResize, false);
             },
 
-            createRubiksCube: function() {
+            createRubiksCube: function () {
                 this.rubiksCube = new THREE.Group();
                 const cubeSize = 1, spacing = 0.1, N = 3;
                 const geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
@@ -264,7 +265,7 @@ const App: React.FC = () => {
                 this.scene!.add(this.rubiksCube);
             },
 
-            onWindowResize: function() {
+            onWindowResize: function () {
                 if (!this.container || !this.camera || !this.renderer || !this.composer) return;
                 this.camera.aspect = this.container.clientWidth / this.container.clientHeight;
                 this.camera.updateProjectionMatrix();
@@ -272,7 +273,7 @@ const App: React.FC = () => {
                 this.composer.setSize(this.container.clientWidth, this.container.clientHeight);
             },
 
-            animate: function() {
+            animate: function () {
                 if (!this.rubiksCube || !this.controls || !this.composer) return;
                 this.animationFrameId = requestAnimationFrame(this.animate.bind(this));
                 const time = Date.now() * 0.001;
@@ -312,11 +313,11 @@ const App: React.FC = () => {
                 this.composer.render();
             },
 
-            start: function() {
+            start: function () {
                 if (!this.animationFrameId) this.animate();
             },
 
-            stop: function() {
+            stop: function () {
                 if (this.animationFrameId) {
                     cancelAnimationFrame(this.animationFrameId);
                     this.animationFrameId = null;
@@ -365,11 +366,11 @@ const App: React.FC = () => {
         // 定义 Stage 类型
         const STAGES: ScrollStage[] = [
             { type: 'image', path: image3_1, duration: 150 },
-            { type: 'text',  stageIndex: 1, duration: 100 },
+            { type: 'text', stageIndex: 1, duration: 100 },
             { type: 'image', path: image3_2, duration: 150 },
-            { type: 'text',  stageIndex: 3, duration: 100 },
+            { type: 'text', stageIndex: 3, duration: 100 },
             { type: 'image', path: image3_3, duration: 150 },
-            { type: 'text',  stageIndex: 5, duration: 100 },
+            { type: 'text', stageIndex: 5, duration: 100 },
         ];
 
         // Scene setup
@@ -663,9 +664,14 @@ const App: React.FC = () => {
 
     return (
         <>
+            {/* 环绕光标文字效果 */}
+            <CircularText
+                text="CHIVALRY CIEUX ★ "
+                spinDuration={8}
+            />
             {/* 三个角落固定悬浮元素 */}
             <div className="fixed-overlay top-right">千丈阴崖百丈溪 孤桐枝上凤偏宜</div>
-            <div className="fixed-overlay bottom-left">TO LEARN AND CREATE,<br/>FOR A MEANINGFUL LIFE AND A BETTER WORLD</div>
+            <div className="fixed-overlay bottom-left">TO LEARN AND CREATE,<br />FOR A MEANINGFUL LIFE AND A BETTER WORLD</div>
             <div className="fixed-overlay bottom-right">chivalrycieux@qq.com 2025</div>
 
             <div className="reveal-container">

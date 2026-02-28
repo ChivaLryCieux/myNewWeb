@@ -35,7 +35,8 @@
 }
 
 /* --- 基础与布局样式 --- */
-body, html {
+body,
+html {
     margin: 0;
     padding: 0;
     background-color: #f4f1ea;
@@ -56,9 +57,27 @@ body, html {
 }
 
 /* --- 三个角落固定悬浮元素样式 --- */
-.top-right { top: 0; right: 0; text-align: right; font-family: 'bei', sans-serif; font-size: 1.5vw; }
-.bottom-left { bottom: 0; left: 0; font-family: 'sans', sans-serif; font-weight: normal; }
-.bottom-right { bottom: 0; right: 0; text-align: right; font-family: 'sans', sans-serif; }
+.top-right {
+    top: 0;
+    right: 0;
+    text-align: right;
+    font-family: 'bei', sans-serif;
+    font-size: 1.5vw;
+}
+
+.bottom-left {
+    bottom: 0;
+    left: 0;
+    font-family: 'sans', sans-serif;
+    font-weight: normal;
+}
+
+.bottom-right {
+    bottom: 0;
+    right: 0;
+    text-align: right;
+    font-family: 'sans', sans-serif;
+}
 
 /* --- 第一页分栏样式 --- */
 .first-page-layout {
@@ -67,6 +86,7 @@ body, html {
     height: 100%;
     box-sizing: border-box;
 }
+
 .first-page-text {
     flex: 0 0 50%;
     box-sizing: border-box;
@@ -76,15 +96,18 @@ body, html {
     justify-content: center;
     font-family: ke, sans-serif;
 }
+
 .first-page-text h1 {
     font-size: 5rem;
     color: #333;
     margin: 0;
 }
+
 .first-page-image {
     flex: 0 0 50%;
     height: 100%;
 }
+
 .first-page-image img {
     width: 100%;
     height: 100%;
@@ -102,32 +125,55 @@ body, html {
     color: #333;
     text-align: justify;
 }
-.content h1 { text-align: center; font-size: 2.5rem; margin-bottom: 2rem; }
-.content p { margin-bottom: 1.5em; text-indent: 2em; }
+
+.content h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+}
+
+.content p {
+    margin-bottom: 1.5em;
+    text-indent: 2em;
+}
 
 /* About Me部分中文字体设置 */
 #about-me p {
     font-family: 'ke', 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
 }
 
-.poem { text-align: center; font-size: 1.3rem; line-height: 2.5; margin-top: 3rem; }
+.poem {
+    text-align: center;
+    font-size: 1.3rem;
+    line-height: 2.5;
+    margin-top: 3rem;
+}
 
 /* --- 头像容器样式，实现文字环绕 --- */
 .avatar-container {
-    float: left; /* 让容器浮动 */
-    shape-outside: circle(50%); /* 定义环绕形状为圆形 */
-    width: 200px; /* 头像容器的宽度 */
-    height: 200px; /* 头像容器的高度 */
-    margin: 0 2em 1em 0; /* 右侧和底部留出空间，让文字环绕 */
-    border-radius: 50%; /* 使容器成为圆形 */
-    overflow: hidden; /* 隐藏超出容器的图片部分 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 添加一些阴影效果 */
+    float: left;
+    /* 让容器浮动 */
+    shape-outside: circle(50%);
+    /* 定义环绕形状为圆形 */
+    width: 200px;
+    /* 头像容器的宽度 */
+    height: 200px;
+    /* 头像容器的高度 */
+    margin: 0 2em 1em 0;
+    /* 右侧和底部留出空间，让文字环绕 */
+    border-radius: 50%;
+    /* 使容器成为圆形 */
+    overflow: hidden;
+    /* 隐藏超出容器的图片部分 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* 添加一些阴影效果 */
 }
 
 .avatar-image {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* 确保图片覆盖整个容器 */
+    object-fit: cover;
+    /* 确保图片覆盖整个容器 */
 }
 
 /* 清除浮动，防止后续内容受到影响 */
@@ -139,7 +185,8 @@ body, html {
 /* --- 图层揭露效果样式 --- */
 .reveal-container {
     position: relative;
-    height: 200vh; /* 提供滚动区域 */
+    height: 200vh;
+    /* 提供滚动区域 */
 }
 
 /* 1. 让 sticky-wrapper 成为唯一的粘性定位元素 */
@@ -174,7 +221,9 @@ body, html {
     position: relative;
 }
 
-#rubiks-cube-container:active { cursor: grabbing; }
+#rubiks-cube-container:active {
+    cursor: grabbing;
+}
 
 /* 魔方右移并在右半屏幕居中 */
 .rubiks-cube-right {
@@ -192,15 +241,32 @@ body, html {
 .marquee-container {
     width: 100%;
     overflow: hidden;
-    background-color: #000;
-    color: #fff;
+    background-color: #2b1329;
+    color: #dbbb7a;
     padding: 1rem 0;
 }
-.marquee-track { display: inline-block; animation: marquee 20s linear infinite; white-space: nowrap; }
-.marquee-track span { font-size: 1.1rem; padding: 0 2rem; }
+
+.marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 20s linear infinite;
+}
+
+.marquee-track span {
+    flex-shrink: 0;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    padding: 0 0.5rem;
+}
+
 @keyframes marquee {
-    from { transform: translateX(0%); }
-    to { transform: translateX(-50%); }
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
 }
 
 /* --- Regarding Sections Split View --- */
@@ -210,9 +276,11 @@ body, html {
     align-items: stretch;
     position: relative;
 }
+
 .regarding-container.reverse {
     flex-direction: row-reverse;
 }
+
 .regarding-text {
     width: 50%;
     padding: 8vh 6vw;
@@ -223,16 +291,19 @@ body, html {
     position: relative;
     z-index: 1;
 }
+
 .regarding-text .text-wrapper {
     max-width: 650px;
     margin: 0 auto;
 }
+
 .regarding-text h1 {
     font-size: 2.5rem;
     margin-bottom: 2rem;
     color: #333;
     font-family: serif, Arial, sans-serif;
 }
+
 .regarding-text p {
     margin-bottom: 1.5em;
     text-indent: 2em;
@@ -242,6 +313,7 @@ body, html {
     text-align: left;
     font-family: serif, Arial, sans-serif;
 }
+
 .regarding-background {
     width: 50%;
     position: absolute;
@@ -250,20 +322,25 @@ body, html {
     transition: transform 0.5s ease;
     z-index: 2;
 }
+
 .regarding-container:not(.reverse) .regarding-background {
     right: 0;
     transform: translateX(0);
 }
+
 .regarding-container:not(.reverse) .regarding-background.shifted {
     transform: translateX(-100%);
 }
+
 .regarding-container.reverse .regarding-background {
     left: 0;
     transform: translateX(0);
 }
+
 .regarding-container.reverse .regarding-background.shifted {
     transform: translateX(100%);
 }
+
 .regarding-chinese {
     position: absolute;
     width: 50%;
@@ -278,25 +355,31 @@ body, html {
     opacity: 0;
     transition: opacity 0.5s ease;
 }
+
 .regarding-container:not(.reverse) .regarding-chinese {
     right: 0;
 }
+
 .regarding-container.reverse .regarding-chinese {
     left: 0;
 }
+
 .regarding-chinese.visible {
     opacity: 1;
 }
+
 .regarding-chinese .text-wrapper {
     max-width: 650px;
     margin: 0 auto;
 }
+
 .regarding-chinese h1 {
     font-size: 2.5rem;
     margin-bottom: 2rem;
     color: #333;
     font-family: 'ke', 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
 }
+
 .regarding-chinese p {
     margin-bottom: 1.5em;
     text-indent: 2em;
