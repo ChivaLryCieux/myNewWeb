@@ -34,6 +34,22 @@
     font-display: swap;
 }
 
+@font-face {
+    font-family: 'ZuumeBlack';
+    src: url('./assets/fonts/ZuumeBlack.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'EdwardianScript';
+    src: url('./assets/fonts/EdwardianScript.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 /* --- 基础与布局样式 --- */
 body,
 html {
@@ -448,4 +464,54 @@ body::before {
     color: #333;
     text-align: justify;
     font-family: 'ke', 'Noto Serif SC', 'Songti SC', 'STSong', 'SimSun', serif;
+}
+
+/* --- Typography Overlay Section --- */
+.typography-overlay {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: linear-gradient(to bottom, #000000 0%, #000000 10%, #f4f1ea 90%, #f4f1ea 100%);
+    padding: 6vh 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.typography-overlay-bg {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    font-family: 'ZuumeBlack', sans-serif;
+    color: #dbbb7a;
+    font-size: 10vw;
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    user-select: none;
+}
+
+.typography-overlay-bg .line {
+    display: block;
+    white-space: nowrap;
+}
+
+.typography-overlay-fg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    text-align: center;
+    font-family: 'EdwardianScript', cursive;
+    color: #c56d88;
+    font-size: 6vw;
+    line-height: 1.6;
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.typography-overlay-fg .line {
+    display: block;
 }

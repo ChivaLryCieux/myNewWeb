@@ -714,6 +714,21 @@ const App: React.FC = () => {
                 <MapComponent />
             </div>
 
+            {/* Typography Overlay Section */}
+            <div className="typography-overlay">
+                <div className="typography-overlay-bg">
+                    <span className="line">LITERATURE</span>
+                    <span className="line">POETRY OR DESIGN</span>
+                    <span className="line">ARTIFICIAL INTELLIGENCE</span>
+                    <span className="line">THE FUTURE</span>
+                </div>
+                <div className="typography-overlay-fg">
+                    <span className="line">tempsyche</span>
+                    <span className="line">Je suis qui je suis</span>
+                    <span className="line">Ich bin wer ich bin</span>
+                    <span className="line">I am who i am</span>
+                </div>
+            </div>
 
             {/* About Me部分 */}
             <div className="content" id="about-me">
