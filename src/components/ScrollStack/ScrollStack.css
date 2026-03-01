@@ -13,7 +13,7 @@
 }
 
 .scroll-stack-inner {
-    padding: 20vh 5rem 50rem;
+    padding: 20vh 5rem 20rem;
     min-height: 100vh;
 }
 
@@ -39,6 +39,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: transform 0.05s linear, filter 0.1s linear;
 }
 
 .scroll-stack-end {

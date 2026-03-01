@@ -602,16 +602,16 @@ const App: React.FC = () => {
                     blurAmount={2}
                 >
                     <ScrollStackItem itemClassName="stack-card-1">
-                        <h2 className="stack-card-text">ABOUT ME</h2>
+                        <h2 className="stack-card-text">ATTENDED ZUNYI AEROSPACE SENIOR HIGH SCHOOL</h2>
                     </ScrollStackItem>
                     <ScrollStackItem itemClassName="stack-card-2">
-                        <h2 className="stack-card-text">ABOUT ME</h2>
+                        <h2 className="stack-card-text">NOW IN THE DUAL BACHELOR'S DEGREE PROGRAM</h2>
                     </ScrollStackItem>
                     <ScrollStackItem itemClassName="stack-card-3">
-                        <h2 className="stack-card-text">ABOUT ME</h2>
+                        <h2 className="stack-card-text">OF VISUAL COMMUNICATION DESIGN AND AI</h2>
                     </ScrollStackItem>
                     <ScrollStackItem itemClassName="stack-card-4">
-                        <h2 className="stack-card-text">ABOUT ME</h2>
+                        <h2 className="stack-card-text">AT TONGJI UNIVERSITY, SHANGHAI</h2>
                     </ScrollStackItem>
                 </ScrollStack>
             </div>

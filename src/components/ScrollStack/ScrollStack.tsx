@@ -49,7 +49,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     const lenisRef = useRef<Lenis | null>(null);
     const cardsRef = useRef<HTMLElement[]>([]);
     const lastTransformsRef = useRef(new Map<number, any>());
-    const isUpdatingRef = useRef(false);
+    const rafPendingRef = useRef(false);
 
     const calculateProgress = useCallback((scrollTop: number, start: number, end: number) => {
         if (scrollTop < start) return 0;
@@ -94,9 +94,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     );
 
     const updateCardTransforms = useCallback(() => {
-        if (!cardsRef.current.length || isUpdatingRef.current) return;
-
-        isUpdatingRef.current = true;
+        if (!cardsRef.current.length) return;
 
         const { scrollTop, containerHeight } = getScrollData();
         const stackPositionPx = parsePercentage(stackPosition, containerHeight);
@@ -149,19 +147,19 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
             }
 
             const newTransform = {
-                translateY: Math.round(translateY * 100) / 100,
-                scale: Math.round(scale * 1000) / 1000,
-                rotation: Math.round(rotation * 100) / 100,
-                blur: Math.round(blur * 100) / 100
+                translateY,
+                scale,
+                rotation,
+                blur
             };
 
             const lastTransform = lastTransformsRef.current.get(i);
             const hasChanged =
                 !lastTransform ||
-                Math.abs(lastTransform.translateY - newTransform.translateY) > 0.1 ||
-                Math.abs(lastTransform.scale - newTransform.scale) > 0.001 ||
-                Math.abs(lastTransform.rotation - newTransform.rotation) > 0.1 ||
-                Math.abs(lastTransform.blur - newTransform.blur) > 0.1;
+                Math.abs(lastTransform.translateY - newTransform.translateY) > 0.01 ||
+                Math.abs(lastTransform.scale - newTransform.scale) > 0.0001 ||
+                Math.abs(lastTransform.rotation - newTransform.rotation) > 0.01 ||
+                Math.abs(lastTransform.blur - newTransform.blur) > 0.01;
 
             if (hasChanged) {
                 const transform = `translate3d(0, ${newTransform.translateY}px, 0) scale(${newTransform.scale}) rotate(${newTransform.rotation}deg)`;
@@ -183,8 +181,6 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
                 }
             }
         });
-
-        isUpdatingRef.current = false;
     }, [
         itemScale,
         itemStackDistance,
@@ -202,7 +198,13 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     ]);
 
     const handleScroll = useCallback(() => {
-        updateCardTransforms();
+        if (!rafPendingRef.current) {
+            rafPendingRef.current = true;
+            requestAnimationFrame(() => {
+                updateCardTransforms();
+                rafPendingRef.current = false;
+            });
+        }
     }, [updateCardTransforms]);
 
     const setupLenis = useCallback(() => {
@@ -301,7 +303,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
             stackCompletedRef.current = false;
             cardsRef.current = [];
             transformsCache.clear();
-            isUpdatingRef.current = false;
+            rafPendingRef.current = false;
         };
     }, [
         itemDistance,
