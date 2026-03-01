@@ -163,7 +163,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ className = '' }) => {
                 width: '100%', // 改为100%而不是100vw
                 height: '100vh',
                 padding: '5vw',
-                backgroundColor: '#000',
+                backgroundColor: '#18350e',
                 boxSizing: 'border-box',
                 overflow: 'hidden',
                 position: 'relative', // 添加相对定位，使绝对定位的按钮相对于此容器定位

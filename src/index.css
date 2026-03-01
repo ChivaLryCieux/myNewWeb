@@ -471,7 +471,7 @@ body::before {
     position: relative;
     width: 100%;
     overflow: hidden;
-    background: linear-gradient(to bottom, #000000 0%, #000000 10%, #f4f1ea 90%, #f4f1ea 100%);
+    background: linear-gradient(to bottom, #18350e 0%, #18350e 10%, #f4f1ea 90%, #f4f1ea 100%);
     padding: 6vh 0;
     display: flex;
     align-items: center;
@@ -489,10 +489,16 @@ body::before {
     letter-spacing: 0.02em;
     text-transform: uppercase;
     user-select: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
-.typography-overlay-bg .line {
-    display: block;
+.typography-overlay-bg .line,
+.typography-overlay-bg .split-parent {
+    display: block !important;
+    width: 100% !important;
     white-space: nowrap;
 }
 
@@ -510,8 +516,14 @@ body::before {
     pointer-events: none;
     user-select: none;
     white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 }
 
-.typography-overlay-fg .line {
-    display: block;
+.typography-overlay-fg .line,
+.typography-overlay-fg .split-parent {
+    display: block !important;
+    width: 100% !important;
 }

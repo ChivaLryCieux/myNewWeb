@@ -9,6 +9,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import MapComponent from './components/MapComponent';
 import CircularText from './components/CircularText/CircularText';
+import SplitText from './components/SplitText';
 
 import artworkImage from './assets/images/1-1.png';
 import avatarImage from './assets/images/avatar.png';
@@ -717,16 +718,120 @@ const App: React.FC = () => {
             {/* Typography Overlay Section */}
             <div className="typography-overlay">
                 <div className="typography-overlay-bg">
-                    <span className="line">LITERATURE</span>
-                    <span className="line">POETRY OR DESIGN</span>
-                    <span className="line">ARTIFICIAL INTELLIGENCE</span>
-                    <span className="line">THE FUTURE</span>
+                    <SplitText
+                        text="LITERATURE"
+                        className="line"
+                        tag="span"
+                        splitType="chars"
+                        delay={30}
+                        duration={0.8}
+                        ease="power3.out"
+                        from={{ opacity: 0, y: 80 }}
+                        to={{ opacity: 1, y: 0 }}
+                        threshold={0.2}
+                        rootMargin="-50px"
+                        textAlign="center"
+                    />
+                    <SplitText
+                        text="POETRY OR DESIGN"
+                        className="line"
+                        tag="span"
+                        splitType="chars"
+                        delay={30}
+                        duration={0.8}
+                        ease="power3.out"
+                        from={{ opacity: 0, y: 80 }}
+                        to={{ opacity: 1, y: 0 }}
+                        threshold={0.2}
+                        rootMargin="-50px"
+                        textAlign="center"
+                    />
+                    <SplitText
+                        text="ARTIFICIAL INTELLIGENCE"
+                        className="line"
+                        tag="span"
+                        splitType="chars"
+                        delay={30}
+                        duration={0.8}
+                        ease="power3.out"
+                        from={{ opacity: 0, y: 80 }}
+                        to={{ opacity: 1, y: 0 }}
+                        threshold={0.2}
+                        rootMargin="-50px"
+                        textAlign="center"
+                    />
+                    <SplitText
+                        text="THE FUTURE"
+                        className="line"
+                        tag="span"
+                        splitType="chars"
+                        delay={30}
+                        duration={0.8}
+                        ease="power3.out"
+                        from={{ opacity: 0, y: 80 }}
+                        to={{ opacity: 1, y: 0 }}
+                        threshold={0.2}
+                        rootMargin="-50px"
+                        textAlign="center"
+                    />
                 </div>
                 <div className="typography-overlay-fg">
-                    <span className="line">tempsyche</span>
-                    <span className="line">Je suis qui je suis</span>
-                    <span className="line">Ich bin wer ich bin</span>
-                    <span className="line">I am who i am</span>
+                    <SplitText
+                        text="tempsyche"
+                        className="line"
+                        tag="span"
+                        splitType="chars"
+                        delay={40}
+                        duration={1.0}
+                        ease="power2.out"
+                        from={{ opacity: 0, y: 30, rotateX: -90 }}
+                        to={{ opacity: 1, y: 0, rotateX: 0 }}
+                        threshold={0.2}
+                        rootMargin="-50px"
+                        textAlign="center"
+                    />
+                    <SplitText
+                        text="Je suis qui je suis"
+                        className="line"
+                        tag="span"
+                        splitType="chars"
+                        delay={40}
+                        duration={1.0}
+                        ease="power2.out"
+                        from={{ opacity: 0, y: 30, rotateX: -90 }}
+                        to={{ opacity: 1, y: 0, rotateX: 0 }}
+                        threshold={0.2}
+                        rootMargin="-50px"
+                        textAlign="center"
+                    />
+                    <SplitText
+                        text="Ich bin wer ich bin"
+                        className="line"
+                        tag="span"
+                        splitType="chars"
+                        delay={40}
+                        duration={1.0}
+                        ease="power2.out"
+                        from={{ opacity: 0, y: 30, rotateX: -90 }}
+                        to={{ opacity: 1, y: 0, rotateX: 0 }}
+                        threshold={0.2}
+                        rootMargin="-50px"
+                        textAlign="center"
+                    />
+                    <SplitText
+                        text="I am who i am"
+                        className="line"
+                        tag="span"
+                        splitType="chars"
+                        delay={40}
+                        duration={1.0}
+                        ease="power2.out"
+                        from={{ opacity: 0, y: 30, rotateX: -90 }}
+                        to={{ opacity: 1, y: 0, rotateX: 0 }}
+                        threshold={0.2}
+                        rootMargin="-50px"
+                        textAlign="center"
+                    />
                 </div>
             </div>
 
