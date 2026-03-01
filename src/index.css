@@ -292,7 +292,7 @@ body::before {
 /* 4. 下层图层（魔方容器）z-index 较低，并移除错误的 margin-top */
 #rubiks-cube-container {
     z-index: 1;
-    background-color: #000000;
+    background-color: #18350e;
     cursor: grab;
     position: relative;
 }
@@ -301,12 +301,12 @@ body::before {
     cursor: grabbing;
 }
 
-/* 魔方右移并在右半屏幕居中 */
-.rubiks-cube-right {
+/* 魔方居中 */
+.rubiks-cube-center {
     position: absolute;
     top: 0;
-    right: 0;
-    width: 50%;
+    left: 0;
+    width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
@@ -526,4 +526,37 @@ body::before {
 .typography-overlay-fg .split-parent {
     display: block !important;
     width: 100% !important;
+}
+
+/* --- Scroll Stack Section --- */
+.scroll-stack-section {
+    width: 100%;
+    position: relative;
+}
+
+.stack-card-text {
+    font-family: 'ZuumeBlack', sans-serif;
+    font-size: 8vw;
+    color: #c56d88;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0;
+    text-align: center;
+    line-height: 1;
+}
+
+.stack-card-1 {
+    background-color: #dbbb7a;
+}
+
+.stack-card-2 {
+    background-color: #ddbb7a;
+}
+
+.stack-card-3 {
+    background-color: #dfbb7a;
+}
+
+.stack-card-4 {
+    background-color: #e0bb7a;
 }

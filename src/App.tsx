@@ -10,6 +10,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import MapComponent from './components/MapComponent';
 import CircularText from './components/CircularText/CircularText';
 import SplitText from './components/SplitText';
+import ScrollStack, { ScrollStackItem } from './components/ScrollStack/ScrollStack';
 
 import artworkImage from './assets/images/1-1.png';
 import avatarImage from './assets/images/avatar.png';
@@ -55,110 +56,6 @@ interface RubiksCubeAppInterface {
     stop: () => void;
 }
 
-// --- 组件定义 ---
-
-// 魔方页面悬浮文字组件
-const FloatingText: React.FC<{
-    targetSectionId: string;
-    lines: string[];
-}> = ({ targetSectionId, lines }) => {
-    const floatingRef = useRef<HTMLDivElement>(null);
-    const targetRef = useRef<HTMLDivElement>(null);
-    const [scrollY, setScrollY] = useState(0);
-
-    useEffect(() => {
-        targetRef.current = document.getElementById(targetSectionId) as HTMLDivElement;
-        handlePositionUpdate();
-    }, [targetSectionId]);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            requestAnimationFrame(() => setScrollY(window.scrollY));
-        };
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    const handlePositionUpdate = () => {
-        const floatingEl = floatingRef.current;
-        const targetEl = targetRef.current;
-        if (!floatingEl || !targetEl) return;
-
-        const targetRect = targetEl.getBoundingClientRect();
-        const targetTop = targetRect.top + window.scrollY;
-        const targetBottom = targetTop + targetRect.height;
-        const floatingHeight = floatingEl.offsetHeight || lines.length * 30;
-        const stopOffset = targetRect.height - floatingHeight - 20;
-        const currentScroll = scrollY;
-        const scrollInTarget = currentScroll - targetTop;
-
-        floatingEl.style.position = '';
-        floatingEl.style.top = '';
-        floatingEl.style.left = '';
-
-        if (currentScroll < targetTop) {
-            floatingEl.style.position = 'absolute';
-            floatingEl.style.top = '20px';
-            floatingEl.style.left = '20px';
-        } else if (currentScroll >= targetTop && currentScroll < targetBottom - floatingHeight) {
-            if (scrollInTarget < stopOffset) {
-                floatingEl.style.position = 'fixed';
-                floatingEl.style.top = '20px';
-                floatingEl.style.left = `${targetRect.left + 20}px`;
-            } else {
-                floatingEl.style.position = 'absolute';
-                floatingEl.style.top = `${stopOffset}px`;
-                floatingEl.style.left = '20px';
-            }
-        } else {
-            floatingEl.style.position = 'absolute';
-            floatingEl.style.top = `${stopOffset}px`;
-            floatingEl.style.left = '20px';
-        }
-    };
-
-    useEffect(() => {
-        handlePositionUpdate();
-    }, [scrollY, lines]);
-
-    useEffect(() => {
-        const handleResize = () => handlePositionUpdate();
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, [lines]);
-
-    return (
-        <div
-            ref={floatingRef}
-            style={{
-                pointerEvents: 'none',
-                zIndex: 100,
-                lineHeight: 1.6,
-            }}
-        >
-            {lines.map((line, index) => (
-                <React.Fragment key={index}>
-                    <span
-                        style={{
-                            color: 'white',
-                            fontWeight: 200,
-                            fontFamily: index % 2 === 0
-                                ? 'ke, sans-serif'
-                                : 'serif, helvetica',
-                            fontSize: index % 2 === 0
-                                ? '2rem'
-                                : '1.5rem',
-                        }}
-                    >
-                        {line}
-                    </span>
-                    {index !== lines.length - 1 && <br />}
-                </React.Fragment>
-            ))}
-        </div>
-    );
-};
-
 const App: React.FC = () => {
     const rubiksCubeRef = useRef<HTMLDivElement>(null);
     // 使用定义的 Interface 替换 any
@@ -198,6 +95,7 @@ const App: React.FC = () => {
             init: function (containerElement: HTMLElement) {
                 this.container = containerElement;
                 this.scene = new THREE.Scene();
+                this.scene.background = new THREE.Color(0x18350e);
 
                 this.camera = new THREE.PerspectiveCamera(75, this.container.clientWidth / this.container.clientHeight, 0.1, 1000);
                 this.camera.position.z = 15;
@@ -213,9 +111,9 @@ const App: React.FC = () => {
                 this.controls.dampingFactor = 0.05;
                 this.controls.enableZoom = false;
 
-                const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+                const ambientLight = new THREE.AmbientLight(0xffffff, 2);
                 this.scene.add(ambientLight);
-                const pointLight = new THREE.PointLight(0xffffff, 1.5, 200);
+                const pointLight = new THREE.PointLight(0xffffff, 5.0, 200);
                 pointLight.position.set(10, 15, 10);
                 this.scene.add(pointLight);
 
@@ -224,7 +122,7 @@ const App: React.FC = () => {
                 // 断言 scene 和 camera 不为空，因为前面已经初始化了
                 const renderScene = new RenderPass(this.scene!, this.camera!);
                 const bloomPass = new UnrealBloomPass(new THREE.Vector2(this.container.clientWidth, this.container.clientHeight), 1.5, 0.4, 0.85);
-                bloomPass.threshold = 0;
+                bloomPass.threshold = 0.6;
                 bloomPass.strength = 0.5;
                 bloomPass.radius = 0;
 
@@ -240,7 +138,7 @@ const App: React.FC = () => {
                 this.rubiksCube = new THREE.Group();
                 const cubeSize = 1, spacing = 0.1, N = 3;
                 const geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
-                const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.5, metalness: 0.5 });
+                const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0xdbbb7a, roughness: 0.5, metalness: 0.5 });
                 const edgeMaterial = new THREE.LineBasicMaterial({ color: 0xeeeeee });
 
                 for (let x = 0; x < N; x++) {
@@ -678,22 +576,7 @@ const App: React.FC = () => {
             <div className="reveal-container">
                 <div className="sticky-wrapper">
                     <div className="reveal-layer" id="rubiks-cube-container">
-                        {/* 悬浮文字组件 */}
-                        <FloatingText
-                            targetSectionId="rubiks-cube-container"
-                            lines={[
-                                "高中就读于遵义航天高级中学",
-                                "Attended Zunyi Aerospace Senior High School",
-                                "现就读于同济大学",
-                                "Currently enrolled in the dual bachelor's degree program",
-                                "视觉传达设计与人工智能",
-                                "In Visual Communication Design and Artificial Intelligence",
-                                "双学士学位项目",
-                                "At Tongji University, Shanghai"
-                            ]}
-
-                        />
-                        <div ref={rubiksCubeRef} className="rubiks-cube-right"></div>
+                        <div ref={rubiksCubeRef} className="rubiks-cube-center"></div>
                     </div>
 
                     <div className="reveal-layer top-layer">
@@ -707,6 +590,30 @@ const App: React.FC = () => {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Scroll Stack Section */}
+            <div className="scroll-stack-section" style={{ backgroundColor: '#18350e' }}>
+                <ScrollStack
+                    useWindowScroll
+                    itemDistance={120}
+                    itemScale={0.03}
+                    itemStackDistance={30}
+                    blurAmount={2}
+                >
+                    <ScrollStackItem itemClassName="stack-card-1">
+                        <h2 className="stack-card-text">ABOUT ME</h2>
+                    </ScrollStackItem>
+                    <ScrollStackItem itemClassName="stack-card-2">
+                        <h2 className="stack-card-text">ABOUT ME</h2>
+                    </ScrollStackItem>
+                    <ScrollStackItem itemClassName="stack-card-3">
+                        <h2 className="stack-card-text">ABOUT ME</h2>
+                    </ScrollStackItem>
+                    <ScrollStackItem itemClassName="stack-card-4">
+                        <h2 className="stack-card-text">ABOUT ME</h2>
+                    </ScrollStackItem>
+                </ScrollStack>
             </div>
 
             {/* 嵌入地图组件 */}
