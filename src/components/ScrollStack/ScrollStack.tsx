@@ -28,6 +28,13 @@ interface ScrollStackProps {
     onStackComplete?: () => void;
 }
 
+interface CardTransformState {
+    translateY: number;
+    scale: number;
+    rotation: number;
+    blur: number;
+}
+
 const ScrollStack: React.FC<ScrollStackProps> = ({
     children,
     className = '',
@@ -37,7 +44,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     stackPosition = '20%',
     scaleEndPosition = '10%',
     baseScale = 0.85,
-    scaleDuration = 0.5,
+    scaleDuration: _scaleDuration = 0.5,
     rotationAmount = 0,
     blurAmount = 0,
     useWindowScroll = false,
@@ -48,7 +55,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
     const animationFrameRef = useRef<number | null>(null);
     const lenisRef = useRef<Lenis | null>(null);
     const cardsRef = useRef<HTMLElement[]>([]);
-    const lastTransformsRef = useRef(new Map<number, any>());
+    const lastTransformsRef = useRef(new Map<number, CardTransformState>());
     const rafPendingRef = useRef(false);
 
     const calculateProgress = useCallback((scrollTop: number, start: number, end: number) => {
@@ -312,7 +319,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
         stackPosition,
         scaleEndPosition,
         baseScale,
-        scaleDuration,
+        _scaleDuration,
         rotationAmount,
         blurAmount,
         useWindowScroll,

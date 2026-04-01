@@ -14,12 +14,19 @@ interface MapComponentProps {
     className?: string;
 }
 
+type FeatureLayer = L.Path & {
+    feature?: {
+        properties?: {
+            adcode?: number;
+        };
+    };
+};
+
 const MapComponent: React.FC<MapComponentProps> = ({ className = '' }) => {
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<L.Map | null>(null);
     const geojsonRef = useRef<L.GeoJSON | null>(null);
     const [isMapVisible, setIsMapVisible] = useState(true); // 设置为默认显示按钮
-
     // 区域编码映射
     const areaCodes = {
         global: null,
@@ -46,6 +53,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ className = '' }) => {
 
     // 新增：监听地图区域可见性
     useEffect(() => {
+        const observedElement = mapContainerRef.current;
         const observer = new IntersectionObserver(
             (entries) => {
                 // 当地图区域可见性超过50%时，显示按钮
@@ -54,13 +62,13 @@ const MapComponent: React.FC<MapComponentProps> = ({ className = '' }) => {
             { threshold: 0.5 } // 可见性阈值设为50%
         );
 
-        if (mapContainerRef.current) {
-            observer.observe(mapContainerRef.current);
+        if (observedElement) {
+            observer.observe(observedElement);
         }
 
         return () => {
-            if (mapContainerRef.current) {
-                observer.unobserve(mapContainerRef.current);
+            if (observedElement) {
+                observer.unobserve(observedElement);
             }
         };
     }, []);
@@ -102,7 +110,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ className = '' }) => {
                                 geojson.setStyle(defaultStyle);
                             }
                         });
-                        (layer as any).feature = feature;
+                        (layer as FeatureLayer).feature = feature as FeatureLayer['feature'];
                     },
                 }).addTo(map);
 
@@ -137,7 +145,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ className = '' }) => {
         if (area !== 'global') {
             const targetCode = areaCodes[area];
             geojson.eachLayer((layer: L.Layer) => {
-                const feature = (layer as any).feature;
+                const feature = (layer as FeatureLayer).feature;
                 if (!feature?.properties?.adcode) return;
 
                 if (area === 'china' || feature.properties.adcode === targetCode) {
@@ -158,15 +166,15 @@ const MapComponent: React.FC<MapComponentProps> = ({ className = '' }) => {
 
     return (
         <div
-            className={`map-wrapper ${className}`}
+            className={`map-wrapper ${className}`.trim()}
             style={{
-                width: '100%', // 改为100%而不是100vw
+                width: '100%',
                 height: '100vh',
                 padding: '5vw',
                 backgroundColor: '#18350e',
                 boxSizing: 'border-box',
                 overflow: 'hidden',
-                position: 'relative', // 添加相对定位，使绝对定位的按钮相对于此容器定位
+                position: 'relative',
             }}
         >
             <div
@@ -189,7 +197,6 @@ const MapComponent: React.FC<MapComponentProps> = ({ className = '' }) => {
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '10px',
-                        // 添加淡入动画
                         animation: 'fadeIn 0.5s ease-out forwards',
                     }}
                 >
@@ -264,4 +271,3 @@ const MapComponent: React.FC<MapComponentProps> = ({ className = '' }) => {
 };
 
 export default MapComponent;
-    
